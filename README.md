@@ -35,3 +35,8 @@ pg-management-system/
 - Payment Processing
 - Maintenance Requests
 - Reports & Analytics
+
+
+## TODO 
+1. Read about Hashing algorithms in Spring. BCrypt is used here
+2. Read about Spring JPA/Hibernate

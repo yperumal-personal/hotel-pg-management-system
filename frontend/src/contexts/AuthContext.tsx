@@ -6,6 +6,14 @@ interface AuthContextType {
   user: User | null;
   loading: boolean;
   login: (email: string, password: string) => Promise<void>;
+  register: (userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    role: string;
+  }) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
 }
@@ -34,13 +42,26 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setUser(user);
   };
 
+  const register = async (userData: {
+    email: string;
+    password: string;
+    firstName: string;
+    lastName: string;
+    phone?: string;
+    role: string;
+  }) => {
+    const { token, user } = await authService.register(userData);
+    localStorage.setItem('token', token);
+    setUser(user);
+  };
+
   const logout = () => {
     authService.logout();
     setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ user, loading, login, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, loading, login, register, logout, isAuthenticated: !!user }}>
       {children}
     </AuthContext.Provider>
   );

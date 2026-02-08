@@ -1,6 +1,6 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import { Box, Card, TextField, Button, Typography, Alert } from '@mui/material';
+import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { Box, Card, TextField, Button, Typography, Alert, Link } from '@mui/material';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function Login() {
@@ -52,6 +52,15 @@ export default function Login() {
             Login
           </Button>
         </form>
+        
+        <Box sx={{ mt: 2, textAlign: 'center' }}>
+          <Typography variant="body2">
+            Don't have an account?{' '}
+            <Link component={RouterLink} to="/register" underline="hover">
+              Sign up
+            </Link>
+          </Typography>
+        </Box>
       </Card>
     </Box>
   );
