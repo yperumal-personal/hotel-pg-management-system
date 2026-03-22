@@ -1,65 +1,62 @@
 package com.pgmanagement.dto;
 
-import com.pgmanagement.model.User;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
-import java.time.LocalDateTime;
-
-public class TenantResponse {
+public class UpdateTenantRequest {
     
-    private Long id;
+    @Email(message = "Invalid email format")
     private String email;
+    
+    @Size(max = 100, message = "First name cannot exceed 100 characters")
     private String firstName;
+    
+    @Size(max = 100, message = "Last name cannot exceed 100 characters")
     private String lastName;
+    
+    @Pattern(regexp = "^[0-9]{10}$", message = "Phone number must be 10 digits")
     private String phone;
+    
+    @Pattern(regexp = "^[0-9]{12}$", message = "Aadhar number must be 12 digits")
     private String aadharNo;
+    
     private String aadharImageUrl;
+    
+    @Pattern(regexp = "EMPLOYEE|STUDENT", message = "Work status must be EMPLOYEE or STUDENT")
     private String workStatus;
+    
     private String employeeName;
+    
     private String collegeName;
+    
     private String streetName;
+    
+    @Size(max = 100, message = "City cannot exceed 100 characters")
     private String city;
+    
+    @Size(max = 100, message = "District cannot exceed 100 characters")
     private String district;
+    
+    @Size(max = 100, message = "State cannot exceed 100 characters")
     private String state;
+    
+    @Pattern(regexp = "^[0-9]{6}$", message = "PIN code must be 6 digits")
     private String pinCode;
+    
+    @Pattern(regexp = "MALE|FEMALE|OTHER", message = "Gender must be MALE, FEMALE, or OTHER")
     private String gender;
+    
+    @Pattern(regexp = "MARRIED|UNMARRIED", message = "Marital status must be MARRIED or UNMARRIED")
     private String maritalStatus;
+    
+    @Pattern(regexp = "ACTIVE|INACTIVE|SUSPENDED", message = "Status must be ACTIVE, INACTIVE, or SUSPENDED")
     private String status;
-    private LocalDateTime createdAt;
     
     // Constructors
-    public TenantResponse() {}
-    
-    public TenantResponse(User user) {
-        this.id = user.getId();
-        this.email = user.getEmail();
-        this.firstName = user.getFirstName();
-        this.lastName = user.getLastName();
-        this.phone = user.getPhone();
-        this.aadharNo = user.getAadharNo();
-        this.aadharImageUrl = user.getAadharImageUrl();
-        this.workStatus = user.getWorkStatus() != null ? user.getWorkStatus().name() : null;
-        this.employeeName = user.getEmployeeName();
-        this.collegeName = user.getCollegeName();
-        this.streetName = user.getStreetName();
-        this.city = user.getCity();
-        this.district = user.getDistrict();
-        this.state = user.getState();
-        this.pinCode = user.getPinCode();
-        this.gender = user.getGender() != null ? user.getGender().name() : null;
-        this.maritalStatus = user.getMaritalStatus() != null ? user.getMaritalStatus().name() : null;
-        this.status = user.getStatus().name();
-        this.createdAt = user.getCreatedAt();
-    }
+    public UpdateTenantRequest() {}
     
     // Getters and Setters
-    public Long getId() {
-        return id;
-    }
-    
-    public void setId(Long id) {
-        this.id = id;
-    }
-    
     public String getEmail() {
         return email;
     }
@@ -194,13 +191,5 @@ public class TenantResponse {
     
     public void setStatus(String status) {
         this.status = status;
-    }
-    
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-    
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
     }
 }

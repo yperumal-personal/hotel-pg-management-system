@@ -1,10 +1,12 @@
 package com.pgmanagement.controller;
 
 import com.pgmanagement.dto.TenantResponse;
+import com.pgmanagement.dto.UpdateTenantRequest;
 import com.pgmanagement.exception.UnauthorizedException;
 import com.pgmanagement.model.User;
 import com.pgmanagement.repository.UserRepository;
 import com.pgmanagement.service.TenantService;
+import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -37,6 +39,30 @@ public class TenantController {
                 .collect(Collectors.toList());
         
         return ResponseEntity.ok(response);
+    }
+    
+    /**
+     * Get tenant by ID (Owner only)
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<TenantResponse> getTenantById(@PathVariable Long id) {
+        verifyOwnerAccess();
+        
+        User tenant = tenantService.getTenantById(id);
+        return ResponseEntity.ok(new TenantResponse(tenant));
+    }
+    
+    /**
+     * Update tenant information (Owner only)
+     */
+    @PutMapping("/{id}")
+    public ResponseEntity<TenantResponse> updateTenant(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTenantRequest request) {
+        verifyOwnerAccess();
+        
+        User updatedTenant = tenantService.updateTenant(id, request);
+        return ResponseEntity.ok(new TenantResponse(updatedTenant));
     }
     
     /**

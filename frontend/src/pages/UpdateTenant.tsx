@@ -1,5 +1,5 @@
-import { useState } from 'react';
-import { useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   Box,
   Card,
@@ -8,17 +8,17 @@ import {
   Typography,
   Alert,
   MenuItem,
-  Link,
   Grid,
+  CircularProgress,
 } from '@mui/material';
-import { useAuth } from '../contexts/AuthContext';
+import { tenantService } from '../services/tenantService';
+import { Tenant } from '../types';
 import FileUpload from '../components/FileUpload';
 
-export default function Register() {
+export default function UpdateTenant() {
+  const { id } = useParams<{ id: string }>();
   const [formData, setFormData] = useState({
     email: '',
-    password: '',
-    confirmPassword: '',
     firstName: '',
     lastName: '',
     phone: '',
@@ -34,11 +34,47 @@ export default function Register() {
     pinCode: '',
     gender: '',
     maritalStatus: '',
-    role: 'TENANT',
+    status: 'ACTIVE',
   });
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const { register } = useAuth();
+  const [success, setSuccess] = useState('');
   const navigate = useNavigate();
+
+  useEffect(() => {
+    fetchTenant();
+  }, [id]);
+
+  const fetchTenant = async () => {
+    try {
+      setLoading(true);
+      const response = await tenantService.getTenantById(Number(id));
+      const tenant: Tenant = response.data;
+      setFormData({
+        email: tenant.email || '',
+        firstName: tenant.firstName || '',
+        lastName: tenant.lastName || '',
+        phone: tenant.phone || '',
+        aadharNo: tenant.aadharNo || '',
+        aadharImageUrl: tenant.aadharImageUrl || '',
+        workStatus: tenant.workStatus || '',
+        employeeName: tenant.employeeName || '',
+        collegeName: tenant.collegeName || '',
+        streetName: tenant.streetName || '',
+        city: tenant.city || '',
+        district: tenant.district || '',
+        state: tenant.state || '',
+        pinCode: tenant.pinCode || '',
+        gender: tenant.gender || '',
+        maritalStatus: tenant.maritalStatus || '',
+        status: tenant.status || 'ACTIVE',
+      });
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Failed to load tenant');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setFormData({
@@ -57,47 +93,37 @@ export default function Register() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setSuccess('');
 
     // Validation
-    if (formData.password !== formData.confirmPassword) {
-      setError('Passwords do not match');
-      return;
-    }
-
-    if (formData.password.length < 6) {
-      setError('Password must be at least 6 characters');
-      return;
-    }
-
     if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
       setError('Phone number must be 10 digits');
       return;
     }
-    
+
     if (formData.aadharNo && !/^\d{12}$/.test(formData.aadharNo)) {
       setError('Aadhar number must be 12 digits');
       return;
     }
-    
+
     if (formData.pinCode && !/^\d{6}$/.test(formData.pinCode)) {
       setError('PIN code must be 6 digits');
       return;
     }
-    
+
     if (formData.workStatus === 'EMPLOYEE' && !formData.employeeName) {
       setError('Employee name is required for employees');
       return;
     }
-    
+
     if (formData.workStatus === 'STUDENT' && !formData.collegeName) {
       setError('College name is required for students');
       return;
     }
 
     try {
-      await register({
+      await tenantService.updateTenant(Number(id), {
         email: formData.email,
-        password: formData.password,
         firstName: formData.firstName,
         lastName: formData.lastName,
         phone: formData.phone || undefined,
@@ -113,36 +139,39 @@ export default function Register() {
         pinCode: formData.pinCode || undefined,
         gender: formData.gender || undefined,
         maritalStatus: formData.maritalStatus || undefined,
-        role: formData.role,
+        status: formData.status,
       });
-      navigate('/dashboard');
+      setSuccess('Tenant updated successfully!');
+      setTimeout(() => navigate('/tenants'), 1500);
     } catch (err: any) {
-      setError(err.response?.data?.message || 'Registration failed');
+      setError(err.response?.data?.message || 'Update failed');
     }
   };
 
-  return (
-    <Box
-      sx={{
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        minHeight: '100vh',
-        bgcolor: '#f5f5f5',
-        py: 4,
-      }}
-    >
-      <Card sx={{ p: 4, maxWidth: 600, width: '100%', maxHeight: '90vh', overflow: 'auto' }}>
-        <Typography variant="h4" gutterBottom align="center">
-          PG Management
-        </Typography>
-        <Typography variant="body2" color="text.secondary" align="center" mb={3}>
-          Create your account
-        </Typography>
+  if (loading) {
+    return (
+      <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+        <CircularProgress />
+      </Box>
+    );
+  }
 
+  return (
+    <Box>
+      <Typography variant="h4" sx={{ mb: 3 }}>
+        Update Tenant
+      </Typography>
+
+      <Card sx={{ p: 4, maxWidth: 800, maxHeight: '80vh', overflow: 'auto' }}>
         {error && (
           <Alert severity="error" sx={{ mb: 2 }}>
             {error}
+          </Alert>
+        )}
+
+        {success && (
+          <Alert severity="success" sx={{ mb: 2 }}>
+            {success}
           </Alert>
         )}
 
@@ -187,7 +216,6 @@ export default function Register() {
                 value={formData.phone}
                 onChange={handleChange}
                 placeholder="10 digit number"
-                required
               />
             </Grid>
             <Grid item xs={12}>
@@ -332,54 +360,32 @@ export default function Register() {
               <TextField
                 fullWidth
                 select
-                label="Role"
-                name="role"
-                value={formData.role}
+                label="Status"
+                name="status"
+                value={formData.status}
                 onChange={handleChange}
                 required
               >
-                <MenuItem value="OWNER">Property Owner</MenuItem>
-                <MenuItem value="TENANT">Tenant</MenuItem>
-                <MenuItem value="STAFF">Staff</MenuItem>
+                <MenuItem value="ACTIVE">Active</MenuItem>
+                <MenuItem value="INACTIVE">Inactive</MenuItem>
+                <MenuItem value="SUSPENDED">Suspended</MenuItem>
               </TextField>
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-              />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                label="Confirm Password"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
             </Grid>
           </Grid>
 
-          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3 }}>
-            Register
-          </Button>
+          <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
+            <Button type="submit" variant="contained" fullWidth>
+              Update Tenant
+            </Button>
+            <Button
+              variant="outlined"
+              fullWidth
+              onClick={() => navigate('/tenants')}
+            >
+              Cancel
+            </Button>
+          </Box>
         </form>
-
-        <Box sx={{ mt: 2, textAlign: 'center' }}>
-          <Typography variant="body2">
-            Already have an account?{' '}
-            <Link component={RouterLink} to="/login" underline="hover">
-              Sign in
-            </Link>
-          </Typography>
-        </Box>
       </Card>
     </Box>
   );

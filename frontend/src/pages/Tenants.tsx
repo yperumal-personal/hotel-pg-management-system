@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Typography,
@@ -12,7 +13,9 @@ import {
   Chip,
   CircularProgress,
   Alert,
+  IconButton,
 } from '@mui/material';
+import { Edit as EditIcon } from '@mui/icons-material';
 import { tenantService } from '../services/tenantService';
 import { Tenant } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -22,6 +25,7 @@ export default function Tenants() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { user } = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchTenants();
@@ -92,14 +96,16 @@ export default function Tenants() {
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
               <TableCell>Aadhar No</TableCell>
+              <TableCell>Aadhar Image</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Joined Date</TableCell>
+              <TableCell>Actions</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tenants.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} align="center">
+                <TableCell colSpan={8} align="center">
                   No tenants found.
                 </TableCell>
               </TableRow>
@@ -113,6 +119,23 @@ export default function Tenants() {
                   <TableCell>{tenant.phone || 'N/A'}</TableCell>
                   <TableCell>{tenant.aadharNo || 'N/A'}</TableCell>
                   <TableCell>
+                    {tenant.aadharImageUrl ? (
+                      <a
+                        href={tenant.aadharImageUrl}
+                        download={`aadhar_${tenant.firstName}_${tenant.lastName}.jpg`}
+                        style={{
+                          color: '#1976d2',
+                          textDecoration: 'none',
+                          cursor: 'pointer',
+                        }}
+                      >
+                        Download
+                      </a>
+                    ) : (
+                      'N/A'
+                    )}
+                  </TableCell>
+                  <TableCell>
                     <Chip
                       label={tenant.status}
                       color={getStatusColor(tenant.status) as any}
@@ -121,6 +144,16 @@ export default function Tenants() {
                   </TableCell>
                   <TableCell>
                     {new Date(tenant.createdAt).toLocaleDateString()}
+                  </TableCell>
+                  <TableCell>
+                    <IconButton
+                      size="small"
+                      color="primary"
+                      onClick={() => navigate(`/tenants/edit/${tenant.id}`)}
+                      title="Edit tenant"
+                    >
+                      <EditIcon />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))

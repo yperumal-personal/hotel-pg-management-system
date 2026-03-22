@@ -79,6 +79,17 @@ export interface Tenant {
   lastName: string;
   phone?: string;
   aadharNo?: string;
+  aadharImageUrl?: string;
+  workStatus?: 'EMPLOYEE' | 'STUDENT';
+  employeeName?: string;
+  collegeName?: string;
+  streetName?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  pinCode?: string;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
+  maritalStatus?: 'MARRIED' | 'UNMARRIED';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   createdAt: string;
 }
