@@ -60,6 +60,20 @@ export interface Payment {
   notes?: string;
 }
 
+export interface Tenant {
+  id: number;
+  email: string;
+  firstName: string;
+  lastName: string;
+  phone?: string;
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  createdAt: string;
+}
+
+export interface UpdateTenantStatusRequest {
+  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+}
+
 export interface AuthResponse {
   token: string;
   user: User;

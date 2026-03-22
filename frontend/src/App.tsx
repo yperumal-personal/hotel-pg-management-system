@@ -7,6 +7,7 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
+import Tenants from './pages/Tenants';
 
 const theme = createTheme({
   palette: {
@@ -29,7 +30,7 @@ function App() {
               <Route path="dashboard" element={<Dashboard />} />
               <Route path="properties" element={<Properties />} />
               <Route path="rooms" element={<div>Rooms Page</div>} />
-              <Route path="tenants" element={<div>Tenants Page</div>} />
+              <Route path="tenants" element={<Tenants />} />
               <Route path="payments" element={<div>Payments Page</div>} />
             </Route>
           </Routes>
