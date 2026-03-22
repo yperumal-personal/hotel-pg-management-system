@@ -46,6 +46,29 @@ public class AuthService {
         user.setFirstName(request.getFirstName());
         user.setLastName(request.getLastName());
         user.setPhone(request.getPhone());
+        user.setAadharNo(request.getAadharNo());
+        user.setAadharImageUrl(request.getAadharImageUrl());
+        
+        if (request.getWorkStatus() != null && !request.getWorkStatus().isEmpty()) {
+            user.setWorkStatus(User.WorkStatus.valueOf(request.getWorkStatus()));
+        }
+        
+        user.setEmployeeName(request.getEmployeeName());
+        user.setCollegeName(request.getCollegeName());
+        user.setStreetName(request.getStreetName());
+        user.setCity(request.getCity());
+        user.setDistrict(request.getDistrict());
+        user.setState(request.getState());
+        user.setPinCode(request.getPinCode());
+        
+        if (request.getGender() != null && !request.getGender().isEmpty()) {
+            user.setGender(User.Gender.valueOf(request.getGender()));
+        }
+        
+        if (request.getMaritalStatus() != null && !request.getMaritalStatus().isEmpty()) {
+            user.setMaritalStatus(User.MaritalStatus.valueOf(request.getMaritalStatus()));
+        }
+        
         user.setRole(User.Role.valueOf(request.getRole()));
         user.setStatus(User.Status.ACTIVE);
         

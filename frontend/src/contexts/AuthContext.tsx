@@ -12,6 +12,18 @@ interface AuthContextType {
     firstName: string;
     lastName: string;
     phone?: string;
+    aadharNo?: string;
+    aadharImageUrl?: string;
+    workStatus?: string;
+    employeeName?: string;
+    collegeName?: string;
+    streetName?: string;
+    city?: string;
+    district?: string;
+    state?: string;
+    pinCode?: string;
+    gender?: string;
+    maritalStatus?: string;
     role: string;
   }) => Promise<void>;
   logout: () => void;
@@ -48,6 +60,18 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     firstName: string;
     lastName: string;
     phone?: string;
+    aadharNo?: string;
+    aadharImageUrl?: string;
+    workStatus?: string;
+    employeeName?: string;
+    collegeName?: string;
+    streetName?: string;
+    city?: string;
+    district?: string;
+    state?: string;
+    pinCode?: string;
+    gender?: string;
+    maritalStatus?: string;
     role: string;
   }) => {
     const { token, user } = await authService.register(userData);

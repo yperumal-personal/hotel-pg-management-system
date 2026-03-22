@@ -9,6 +9,18 @@ public class UserResponse {
     private String firstName;
     private String lastName;
     private String phone;
+    private String aadharNo;
+    private String aadharImageUrl;
+    private String workStatus;
+    private String employeeName;
+    private String collegeName;
+    private String streetName;
+    private String city;
+    private String district;
+    private String state;
+    private String pinCode;
+    private String gender;
+    private String maritalStatus;
     private String role;
     private String status;
     
@@ -21,6 +33,18 @@ public class UserResponse {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.phone = user.getPhone();
+        this.aadharNo = user.getAadharNo();
+        this.aadharImageUrl = user.getAadharImageUrl();
+        this.workStatus = user.getWorkStatus() != null ? user.getWorkStatus().name() : null;
+        this.employeeName = user.getEmployeeName();
+        this.collegeName = user.getCollegeName();
+        this.streetName = user.getStreetName();
+        this.city = user.getCity();
+        this.district = user.getDistrict();
+        this.state = user.getState();
+        this.pinCode = user.getPinCode();
+        this.gender = user.getGender() != null ? user.getGender().name() : null;
+        this.maritalStatus = user.getMaritalStatus() != null ? user.getMaritalStatus().name() : null;
         this.role = user.getRole().name();
         this.status = user.getStatus().name();
     }
@@ -80,5 +104,101 @@ public class UserResponse {
     
     public void setStatus(String status) {
         this.status = status;
+    }
+    
+    public String getAadharNo() {
+        return aadharNo;
+    }
+    
+    public void setAadharNo(String aadharNo) {
+        this.aadharNo = aadharNo;
+    }
+    
+    public String getAadharImageUrl() {
+        return aadharImageUrl;
+    }
+    
+    public void setAadharImageUrl(String aadharImageUrl) {
+        this.aadharImageUrl = aadharImageUrl;
+    }
+    
+    public String getWorkStatus() {
+        return workStatus;
+    }
+    
+    public void setWorkStatus(String workStatus) {
+        this.workStatus = workStatus;
+    }
+    
+    public String getEmployeeName() {
+        return employeeName;
+    }
+    
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+    
+    public String getCollegeName() {
+        return collegeName;
+    }
+    
+    public void setCollegeName(String collegeName) {
+        this.collegeName = collegeName;
+    }
+    
+    public String getStreetName() {
+        return streetName;
+    }
+    
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+    
+    public String getCity() {
+        return city;
+    }
+    
+    public void setCity(String city) {
+        this.city = city;
+    }
+    
+    public String getDistrict() {
+        return district;
+    }
+    
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+    
+    public String getState() {
+        return state;
+    }
+    
+    public void setState(String state) {
+        this.state = state;
+    }
+    
+    public String getPinCode() {
+        return pinCode;
+    }
+    
+    public void setPinCode(String pinCode) {
+        this.pinCode = pinCode;
+    }
+    
+    public String getGender() {
+        return gender;
+    }
+    
+    public void setGender(String gender) {
+        this.gender = gender;
+    }
+    
+    public String getMaritalStatus() {
+        return maritalStatus;
+    }
+    
+    public void setMaritalStatus(String maritalStatus) {
+        this.maritalStatus = maritalStatus;
     }
 }

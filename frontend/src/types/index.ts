@@ -4,6 +4,18 @@ export interface User {
   firstName: string;
   lastName: string;
   phone?: string;
+  aadharNo?: string;
+  aadharImageUrl?: string;
+  workStatus?: 'EMPLOYEE' | 'STUDENT';
+  employeeName?: string;
+  collegeName?: string;
+  streetName?: string;
+  city?: string;
+  district?: string;
+  state?: string;
+  pinCode?: string;
+  gender?: 'MALE' | 'FEMALE' | 'OTHER';
+  maritalStatus?: 'MARRIED' | 'UNMARRIED';
   role: 'OWNER' | 'TENANT' | 'STAFF' | 'ADMIN';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
 }
@@ -66,6 +78,7 @@ export interface Tenant {
   firstName: string;
   lastName: string;
   phone?: string;
+  aadharNo?: string;
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   createdAt: string;
 }

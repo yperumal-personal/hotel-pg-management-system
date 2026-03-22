@@ -11,6 +11,7 @@ public class TenantResponse {
     private String firstName;
     private String lastName;
     private String phone;
+    private String aadharNo;
     private String status;
     private LocalDateTime createdAt;
     
@@ -23,6 +24,7 @@ public class TenantResponse {
         this.firstName = user.getFirstName();
         this.lastName = user.getLastName();
         this.phone = user.getPhone();
+        this.aadharNo = user.getAadharNo();
         this.status = user.getStatus().name();
         this.createdAt = user.getCreatedAt();
     }
@@ -66,6 +68,14 @@ public class TenantResponse {
     
     public void setPhone(String phone) {
         this.phone = phone;
+    }
+    
+    public String getAadharNo() {
+        return aadharNo;
+    }
+    
+    public void setAadharNo(String aadharNo) {
+        this.aadharNo = aadharNo;
     }
     
     public String getStatus() {

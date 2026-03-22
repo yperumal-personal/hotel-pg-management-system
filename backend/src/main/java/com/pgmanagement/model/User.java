@@ -26,6 +26,45 @@ public class User {
     @Column(length = 20)
     private String phone;
     
+    @Column(name = "aadhar_no", length = 12)
+    private String aadharNo;
+    
+    @Column(name = "aadhar_image_url", length = 500)
+    private String aadharImageUrl;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "work_status", length = 20)
+    private WorkStatus workStatus;
+    
+    @Column(name = "employee_name")
+    private String employeeName;
+    
+    @Column(name = "college_name")
+    private String collegeName;
+    
+    @Column(name = "street_name")
+    private String streetName;
+    
+    @Column(length = 100)
+    private String city;
+    
+    @Column(length = 100)
+    private String district;
+    
+    @Column(length = 100)
+    private String state;
+    
+    @Column(name = "pin_code", length = 10)
+    private String pinCode;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(length = 20)
+    private Gender gender;
+    
+    @Enumerated(EnumType.STRING)
+    @Column(name = "marital_status", length = 20)
+    private MaritalStatus maritalStatus;
+    
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
@@ -58,6 +97,18 @@ public class User {
     
     public enum Status {
         ACTIVE, INACTIVE, SUSPENDED
+    }
+    
+    public enum WorkStatus {
+        EMPLOYEE, STUDENT
+    }
+    
+    public enum Gender {
+        MALE, FEMALE, OTHER
+    }
+    
+    public enum MaritalStatus {
+        MARRIED, UNMARRIED
     }
     
     // Constructors
@@ -150,5 +201,101 @@ public class User {
     
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+    
+    public String getAadharNo() {
+        return aadharNo;
+    }
+    
+    public void setAadharNo(String aadharNo) {
+        this.aadharNo = aadharNo;
+    }
+    
+    public String getAadharImageUrl() {
+        return aadharImageUrl;
+    }
+    
+    public void setAadharImageUrl(String aadharImageUrl) {
+        this.aadharImageUrl = aadharImageUrl;
+    }
+    
+    public WorkStatus getWorkStatus() {
+        return workStatus;
+    }
+    
+    public void setWorkStatus(WorkStatus workStatus) {
+        this.workStatus = workStatus;
+    }
+    
+    public String getEmployeeName() {
+        return employeeName;
+    }
+    
+    public void setEmployeeName(String employeeName) {
+        this.employeeName = employeeName;
+    }
+    
+    public String getCollegeName() {
+        return collegeName;
+    }
+    
+    public void setCollegeName(String collegeName) {
+        this.collegeName = collegeName;
+    }
+    
+    public String getStreetName() {
+        return streetName;
+    }
+    
+    public void setStreetName(String streetName) {
+        this.streetName = streetName;
+    }
+    
+    public String getCity() {
+        return city;
+    }
+    
+    public void setCity(String city) {
+        this.city = city;
+    }
+    
+    public String getDistrict() {
+        return district;
+    }
+    
+    public void setDistrict(String district) {
+        this.district = district;
+    }
+    
+    public String getState() {
+        return state;
+    }
+    
+    public void setState(String state) {
+        this.state = state;
+    }
+    
+    public String getPinCode() {
+        return pinCode;
+    }
+    
+    public void setPinCode(String pinCode) {
+        this.pinCode = pinCode;
+    }
+    
+    public Gender getGender() {
+        return gender;
+    }
+    
+    public void setGender(Gender gender) {
+        this.gender = gender;
+    }
+    
+    public MaritalStatus getMaritalStatus() {
+        return maritalStatus;
+    }
+    
+    public void setMaritalStatus(MaritalStatus maritalStatus) {
+        this.maritalStatus = maritalStatus;
     }
 }

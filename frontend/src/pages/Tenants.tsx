@@ -91,6 +91,7 @@ export default function Tenants() {
               <TableCell>Name</TableCell>
               <TableCell>Email</TableCell>
               <TableCell>Phone</TableCell>
+              <TableCell>Aadhar No</TableCell>
               <TableCell>Status</TableCell>
               <TableCell>Joined Date</TableCell>
             </TableRow>
@@ -98,7 +99,7 @@ export default function Tenants() {
           <TableBody>
             {tenants.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={5} align="center">
+                <TableCell colSpan={6} align="center">
                   No tenants found.
                 </TableCell>
               </TableRow>
@@ -110,6 +111,7 @@ export default function Tenants() {
                   </TableCell>
                   <TableCell>{tenant.email}</TableCell>
                   <TableCell>{tenant.phone || 'N/A'}</TableCell>
+                  <TableCell>{tenant.aadharNo || 'N/A'}</TableCell>
                   <TableCell>
                     <Chip
                       label={tenant.status}
