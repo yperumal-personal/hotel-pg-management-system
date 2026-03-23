@@ -4,176 +4,146 @@ Quick reference guide for AI models to implement features in the PG Management S
 
 ---
 
-## ⚠️ CRITICAL: Implementation Guidelines
+## ⚠️ CRITICAL RULES
 
-**ONLY implement what is explicitly requested. DO NOT add extra features, methods, or business logic.**
+**Implementation:**
+- ✅ ONLY implement what is explicitly requested
+- ❌ DO NOT add CRUD unless specifically asked
+- ❌ DO NOT add search/filter/pagination unless requested
+- ✅ Start minimal - add only essential code
+- ✅ Ask for clarification if ambiguous
 
-- ✅ If asked to "display tenants", implement ONLY the read/display functionality
-- ❌ DO NOT add create, update, delete, search, filter, or any other operations unless specifically requested
-- ✅ Start minimal - add only the essential code to fulfill the exact request
-- ✅ Ask for clarification if the requirement is ambiguous
-- ✅ User will request additional features when needed - don't anticipate them
+**Code Quality:**
+- ⛔ NEVER let files exceed 500 lines - refactor immediately
+- ⛔ NEVER duplicate code - create reusable utilities/components
+- ⛔ NEVER expose sensitive data - use DTOs
+- ✅ ALWAYS check file size after changes
+- ✅ ALWAYS think reusability first
 
 **Examples:**
-- Request: "Show list of tenants" → Implement: GET endpoint + display table ONLY
-- Request: "Add ability to create properties" → Implement: POST endpoint + create form ONLY
-- Request: "Display tenant details with search" → Implement: GET + display + search (both requested)
+- "Show list of tenants" → GET endpoint + display ONLY
+- "Add create properties" → POST endpoint + form ONLY
+- "Display with search" → GET + display + search (both requested)
 
 ---
 
-## Project Structure
+## Tech Stack
 
 ```
-Backend: Spring Boot (Java 17) + PostgreSQL
-Frontend: React (TypeScript) + Material-UI + Vite
-Auth: JWT tokens (24-hour expiration)
+Backend: Spring Boot (Java 17) + PostgreSQL + JPA
+Frontend: React 18 + TypeScript + Material-UI + Vite
+Auth: JWT (24-hour expiration)
 ```
 
 ---
 
-## Backend - Adding a Feature
+## Backend Implementation Pattern
 
-### Step 1: Database Schema
+**Order:** Database → Entity → Repository → Service → Controller → DTOs
+
+**1. Database (database/schema.sql)**
 ```sql
--- Add to database/schema.sql
 CREATE TABLE features (
     id BIGSERIAL PRIMARY KEY,
-    owner_id BIGINT NOT NULL REFERENCES users(id),
+    owner_id BIGINT REFERENCES users(id),
     name VARCHAR(255) NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 ```
 
-### Step 2: Entity Model
+**2. Entity (model/Feature.java)**
 ```java
-// src/main/java/com/pgmanagement/model/Feature.java
-@Entity
-@Table(name = "features")
+@Entity @Table(name = "features")
 public class Feature {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
+    @ManyToOne @JoinColumn(name = "owner_id")
     private User owner;
-    
-    @NotBlank
-    private String name;
-    
+    @NotBlank private String name;
     // Getters & Setters
 }
 ```
 
-### Step 3: Repository
+**3. Repository (repository/FeatureRepository.java)**
 ```java
-// src/main/java/com/pgmanagement/repository/FeatureRepository.java
 @Repository
 public interface FeatureRepository extends JpaRepository<Feature, Long> {
     List<Feature> findByOwnerId(Long ownerId);
-    Optional<Feature> findByIdAndOwnerId(Long id, Long ownerId);
 }
 ```
 
-### Step 4: Service
+**4. Service (service/FeatureService.java)**
 ```java
-// src/main/java/com/pgmanagement/service/FeatureService.java
 @Service
 public class FeatureService {
-    @Autowired
-    private FeatureRepository repo;
+    @Autowired private FeatureRepository repo;
     
     public List<Feature> getUserFeatures(Long userId) {
         return repo.findByOwnerId(userId);
     }
     
-    public Feature getFeature(Long id, Long userId) {
-        return repo.findByIdAndOwnerId(id, userId)
-            .orElseThrow(() -> new ResourceNotFoundException("Feature not found"));
-    }
-    
-    public Feature create(Long userId, CreateFeatureRequest request) {
-        Feature feature = new Feature();
-        feature.setOwnerId(userId);
-        feature.setName(request.getName());
-        return repo.save(feature);
+    public Feature create(Long userId, CreateFeatureRequest req) {
+        Feature f = new Feature();
+        f.setOwnerId(userId);
+        f.setName(req.getName());
+        return repo.save(f);
     }
 }
 ```
 
-### Step 5: Controller
+**5. Controller (controller/FeatureController.java)**
 ```java
-// src/main/java/com/pgmanagement/controller/FeatureController.java
-@RestController
-@RequestMapping("/features")
+@RestController @RequestMapping("/features")
 public class FeatureController {
-    @Autowired
-    private FeatureService service;
+    @Autowired private FeatureService service;
     
     @GetMapping
     public ResponseEntity<List<FeatureResponse>> getFeatures() {
         Long userId = getCurrentUserId();
-        List<Feature> features = service.getUserFeatures(userId);
-        return ResponseEntity.ok(features.stream()
-            .map(f -> new FeatureResponse(f))
-            .collect(Collectors.toList()));
+        return ResponseEntity.ok(service.getUserFeatures(userId)
+            .stream().map(FeatureResponse::new).collect(Collectors.toList()));
     }
     
     @PostMapping
-    public ResponseEntity<FeatureResponse> create(@Valid @RequestBody CreateFeatureRequest request) {
-        Long userId = getCurrentUserId();
-        Feature feature = service.create(userId, request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(new FeatureResponse(feature));
+    public ResponseEntity<FeatureResponse> create(@Valid @RequestBody CreateFeatureRequest req) {
+        Feature f = service.create(getCurrentUserId(), req);
+        return ResponseEntity.status(CREATED).body(new FeatureResponse(f));
     }
     
     private Long getCurrentUserId() {
-        UserDetails userDetails = (UserDetails) SecurityContextHolder.getContext()
-            .getAuthentication().getPrincipal();
-        return userRepository.findByEmail(userDetails.getUsername())
-            .map(User::getId).orElseThrow();
+        return ((UserDetails) SecurityContextHolder.getContext()
+            .getAuthentication().getPrincipal()).getUsername(); // then lookup
     }
 }
 ```
 
-### Step 6: DTOs
+**6. DTOs (dto/)**
 ```java
-// src/main/java/com/pgmanagement/dto/CreateFeatureRequest.java
 public class CreateFeatureRequest {
-    @NotBlank(message = "Name required")
-    private String name;
-    // Getters & Setters
+    @NotBlank private String name;
 }
 
-// src/main/java/com/pgmanagement/dto/FeatureResponse.java
 public class FeatureResponse {
-    private Long id;
-    private String name;
-    private LocalDateTime createdAt;
-    // Getters & Setters
+    private Long id; private String name; private LocalDateTime createdAt;
 }
 ```
 
 ---
 
-## Frontend - Adding a Feature
+## Frontend Implementation Pattern
 
-### Step 1: Types
+**Order:** Types → Service → Component → Route
+
+**1. Types (types/index.ts)**
 ```typescript
-// src/types/index.ts
 export interface Feature {
-    id: number;
-    name: string;
-    createdAt: string;
+    id: number; name: string; createdAt: string;
 }
-
-export interface CreateFeatureRequest {
-    name: string;
-}
+export interface CreateFeatureRequest { name: string; }
 ```
 
-### Step 2: API Service
+**2. Service (services/featureService.ts)**
 ```typescript
-// src/services/featureService.ts
 import api from './api';
 import { Feature, CreateFeatureRequest } from '../types';
 
@@ -184,17 +154,15 @@ export const featureService = {
 };
 ```
 
-### Step 3: Component
+**3. Component (pages/Features.tsx)**
 ```typescript
-// src/pages/Features.tsx
 import { useState, useEffect } from 'react';
 import { Box, Button, Table, TableBody, TableCell, TableHead, TableRow, 
          Dialog, TextField, CircularProgress } from '@mui/material';
 import { featureService } from '../services/featureService';
-import { Feature } from '../types';
 
 export default function Features() {
-    const [features, setFeatures] = useState<Feature[]>([]);
+    const [features, setFeatures] = useState([]);
     const [loading, setLoading] = useState(true);
     const [openDialog, setOpenDialog] = useState(false);
     const [formData, setFormData] = useState({ name: '' });
@@ -206,209 +174,152 @@ export default function Features() {
     }, []);
 
     const handleCreate = async () => {
-        const response = await featureService.create(formData);
-        setFeatures([...features, response.data]);
+        const res = await featureService.create(formData);
+        setFeatures([...features, res.data]);
         setOpenDialog(false);
-        setFormData({ name: '' });
     };
 
     if (loading) return <CircularProgress />;
 
     return (
         <Box>
-            <Button variant="contained" onClick={() => setOpenDialog(true)}>Add Feature</Button>
-            
+            <Button variant="contained" onClick={() => setOpenDialog(true)}>Add</Button>
             <Table>
-                <TableHead>
-                    <TableRow><TableCell>Name</TableCell><TableCell>Actions</TableCell></TableRow>
-                </TableHead>
+                <TableHead><TableRow><TableCell>Name</TableCell></TableRow></TableHead>
                 <TableBody>
                     {features.map(f => (
-                        <TableRow key={f.id}>
-                            <TableCell>{f.name}</TableCell>
-                            <TableCell>
-                                <Button size="small">Edit</Button>
-                                <Button size="small" color="error">Delete</Button>
-                            </TableCell>
-                        </TableRow>
+                        <TableRow key={f.id}><TableCell>{f.name}</TableCell></TableRow>
                     ))}
                 </TableBody>
             </Table>
-
             <Dialog open={openDialog} onClose={() => setOpenDialog(false)}>
-                <Box sx={{ p: 3, minWidth: 400 }}>
-                    <TextField
-                        label="Name"
-                        value={formData.name}
-                        onChange={(e) => setFormData({ name: e.target.value })}
-                        fullWidth
-                        margin="normal"
-                    />
-                    <Button variant="contained" onClick={handleCreate} fullWidth sx={{ mt: 2 }}>
-                        Create
-                    </Button>
-                </Box>
+                <TextField label="Name" value={formData.name} 
+                    onChange={(e) => setFormData({ name: e.target.value })} />
+                <Button onClick={handleCreate}>Create</Button>
             </Dialog>
         </Box>
     );
 }
 ```
 
-### Step 4: Add Route
+**4. Route (App.tsx)**
 ```typescript
-// In App.tsx
 <Route path="features" element={<Features />} />
 ```
 
 ---
 
-## Testing Endpoints
+## Testing
 
 ```bash
-# Login first
+# Login
 curl -X POST http://localhost:8080/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"user@example.com","password":"password123"}'
 
-# Copy token from response, then:
-
-# Create feature
-curl -X POST http://localhost:8080/api/features \
-  -H "Authorization: Bearer TOKEN" \
-  -H "Content-Type: application/json" \
-  -d '{"name":"My Feature"}'
-
-# Get features
+# Use token for requests
 curl -X GET http://localhost:8080/api/features \
   -H "Authorization: Bearer TOKEN"
 ```
 
 ---
 
-## Key Patterns to Follow
+## File Size & Reusability
 
-### Backend
-- ✅ Always use DTOs (never return entities)
-- ✅ Always validate input with @Valid
-- ✅ Always check authorization (verify user owns resource)
-- ✅ Always use custom exceptions (ResourceNotFoundException, UnauthorizedException)
-- ✅ Always get current user from SecurityContext
+### ⚠️ 500-Line Rule
+**If file > 500 lines, refactor immediately.**
 
-### Frontend
-- ✅ Always import types from src/types
-- ✅ Always handle loading state
-- ✅ Always handle errors
-- ✅ Always use Material-UI components
-- ✅ Axios auto-adds JWT token
+### Backend Refactoring
+```java
+// Split large services
+@Component public class AuthUtil {
+    public Long getCurrentUserId() { /* ... */ }
+}
 
-### Database
-- ✅ Add table to database/schema.sql
-- ✅ Create foreign key to users
-- ✅ Add timestamps (created_at, updated_at)
-- ✅ Add indexes on frequently queried columns
+// Extract validators
+@Component public class PropertyValidator {
+    public void validate(Property p) { /* ... */ }
+}
+
+// Extract mappers
+@Component public class PropertyMapper {
+    public PropertyResponse toResponse(Property p) { /* ... */ }
+}
+```
+
+### Frontend Refactoring
+```typescript
+// Extract custom hooks
+// hooks/useProperties.ts
+export function useProperties() {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    useEffect(() => { /* fetch */ }, []);
+    return { data, loading, setData };
+}
+
+// Extract utility functions
+// utils/formatters.ts
+export const formatCurrency = (n) => new Intl.NumberFormat('en-IN').format(n);
+
+// Extract shared components
+// components/shared/DataTable.tsx
+export function DataTable({ data, columns }) { /* ... */ }
+```
+
+### Refactor Triggers
+- 🚨 File > 500 lines
+- 🚨 Code duplicated 3+ times
+- 🚨 Method > 50 lines
+- 🚨 Component has 5+ useState hooks
+
+### File Structure
+```
+Backend: src/main/java/com/pgmanagement/util/  (shared utilities)
+Frontend: src/hooks/, src/utils/, src/components/shared/
+```
 
 ---
 
-## Key Annotations Reference
+## Quick Reference
 
+### Key Annotations
 | Annotation | Purpose |
 |-----------|---------|
-| @Entity | JPA entity class |
-| @Table(name="...") | Database table mapping |
-| @Id | Primary key |
-| @GeneratedValue | Auto-generate ID |
-| @ManyToOne | Foreign key relationship |
-| @JoinColumn | Column name for foreign key |
-| @RestController | REST endpoint class |
-| @RequestMapping("/path") | Base URL path |
-| @GetMapping | GET request |
-| @PostMapping | POST request |
-| @PutMapping | PUT request |
-| @DeleteMapping | DELETE request |
-| @Valid | Validate input |
-| @NotBlank | Required field |
-| @Service | Service bean |
-| @Repository | Repository bean |
-| @Autowired | Dependency injection |
+| @Entity, @Table | JPA entity |
+| @Id, @GeneratedValue | Primary key |
+| @ManyToOne, @JoinColumn | Foreign key |
+| @RestController, @RequestMapping | REST endpoint |
+| @GetMapping, @PostMapping, @PutMapping, @DeleteMapping | HTTP methods |
+| @Valid, @NotBlank | Validation |
+| @Service, @Repository, @Autowired | Spring beans |
 
----
-
-## File Locations
-
+### File Locations
 ```
-Backend:
-  src/main/java/com/pgmanagement/model/        (Entities)
-  src/main/java/com/pgmanagement/repository/   (JPA)
-  src/main/java/com/pgmanagement/service/      (Business logic)
-  src/main/java/com/pgmanagement/controller/   (HTTP endpoints)
-  src/main/java/com/pgmanagement/dto/          (Request/Response)
-
-Frontend:
-  src/types/index.ts                           (Types)
-  src/services/                                (API calls)
-  src/pages/                                   (Full pages)
-  src/components/                              (Reusable components)
-  src/contexts/                                (Global state)
-
-Database:
-  database/schema.sql                          (Table definitions)
+Backend: src/main/java/com/pgmanagement/{model,repository,service,controller,dto}
+Frontend: src/{types,services,pages,components,contexts,hooks,utils}
+Database: database/schema.sql
 ```
 
----
-
-## Common Commands
-
+### Commands
 ```bash
-# Backend
-cd backend
-mvn clean package          # Build
-mvn spring-boot:run       # Run
-mvn test                  # Test
+Backend: cd backend && mvn spring-boot:run
+Frontend: cd frontend && npm run dev
+Database: psql -d pg_management -f database/schema.sql
+```
 
-# Frontend
-cd frontend
-npm install               # Install
-npm run dev              # Dev server
-npm run build            # Build
-
-# Database
-psql -d pg_management -f database/schema.sql  # Apply schema
+### Architecture Flow
+```
+React → Axios (JWT) → Controller → Service → Repository → PostgreSQL
 ```
 
 ---
 
-## Architecture Overview
+## Implementation Order
 
-```
-User Request
-    ↓
-Axios (adds JWT token)
-    ↓
-Spring Boot Controller
-    ↓
-Service (business logic)
-    ↓
-Repository (database)
-    ↓
-PostgreSQL
-    ↓
-JSON Response ← Frontend
-```
-
----
-
-**When implementing a feature, always follow this order:**
-1. Database schema (only if new table needed)
-2. Backend: repository → service → controller → DTOs (only methods needed for the request)
+1. Database schema (if new table)
+2. Backend: Entity → Repository → Service → Controller → DTOs
 3. Test backend with curl
-4. Frontend: types → service → component (only functionality needed for the request)
-5. Add route
+4. Frontend: Types → Service → Component
+5. Add route to App.tsx
 6. Test frontend
-
-**Critical Rules:**
-- ⛔ NEVER expose sensitive data in responses. Use DTOs to hide passwords/secrets
-- ⛔ NEVER implement CRUD operations unless specifically requested
-- ⛔ NEVER add search, filter, pagination unless specifically requested  
-- ⛔ NEVER add extra endpoints or service methods "just in case"
-- ✅ ONLY implement the minimum viable code to satisfy the exact request
-- ✅ User will ask for additional features when they need them
