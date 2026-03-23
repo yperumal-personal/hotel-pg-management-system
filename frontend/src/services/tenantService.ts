@@ -36,4 +36,9 @@ export const tenantService = {
    * Update tenant
    */
   updateTenant: (id: number, data: UpdateTenantData) => api.put<Tenant>(`/tenants/${id}`, data),
+  
+  /**
+   * Delete tenant
+   */
+  deleteTenant: (id: number) => api.delete(`/tenants/${id}`),
 };

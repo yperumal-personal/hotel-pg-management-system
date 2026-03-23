@@ -66,6 +66,17 @@ public class TenantController {
     }
     
     /**
+     * Delete tenant (Owner only)
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTenant(@PathVariable Long id) {
+        verifyOwnerAccess();
+        
+        tenantService.deleteTenant(id);
+        return ResponseEntity.noContent().build();
+    }
+    
+    /**
      * Verify that the current user is an OWNER
      */
     private void verifyOwnerAccess() {

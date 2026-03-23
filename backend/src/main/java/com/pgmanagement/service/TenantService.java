@@ -96,5 +96,14 @@ public class TenantService {
         
         return tenantRepository.save(tenant);
     }
+    
+    /**
+     * Delete tenant by ID
+     */
+    @Transactional
+    public void deleteTenant(Long id) {
+        User tenant = getTenantById(id);
+        tenantRepository.delete(tenant);
+    }
 }
 

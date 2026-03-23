@@ -10,6 +10,11 @@ import {
   MenuItem,
   Grid,
   CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogContentText,
+  DialogActions,
 } from '@mui/material';
 import { tenantService } from '../services/tenantService';
 import { Tenant } from '../types';
@@ -37,6 +42,9 @@ export default function UpdateTenant() {
     status: 'ACTIVE',
   });
   const [loading, setLoading] = useState(true);
+  const [submitting, setSubmitting] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
   const navigate = useNavigate();
@@ -90,34 +98,56 @@ export default function UpdateTenant() {
     });
   };
 
+  const handleDelete = async () => {
+    setOpenDeleteDialog(false);
+    setDeleting(true);
+    setError('');
+    
+    try {
+      await tenantService.deleteTenant(Number(id));
+      setSuccess('Tenant deleted successfully!');
+      setTimeout(() => navigate('/tenants'), 1500);
+    } catch (err: any) {
+      setError(err.response?.data?.message || 'Delete failed');
+    } finally {
+      setDeleting(false);
+    }
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setSubmitting(true);
 
     // Validation
     if (formData.phone && !/^\d{10}$/.test(formData.phone)) {
       setError('Phone number must be 10 digits');
+      setSubmitting(false);
       return;
     }
 
     if (formData.aadharNo && !/^\d{12}$/.test(formData.aadharNo)) {
       setError('Aadhar number must be 12 digits');
+      setSubmitting(false);
       return;
     }
 
     if (formData.pinCode && !/^\d{6}$/.test(formData.pinCode)) {
       setError('PIN code must be 6 digits');
+      setSubmitting(false);
       return;
     }
 
     if (formData.workStatus === 'EMPLOYEE' && !formData.employeeName) {
       setError('Employee name is required for employees');
+      setSubmitting(false);
       return;
     }
 
     if (formData.workStatus === 'STUDENT' && !formData.collegeName) {
       setError('College name is required for students');
+      setSubmitting(false);
       return;
     }
 
@@ -145,6 +175,8 @@ export default function UpdateTenant() {
       setTimeout(() => navigate('/tenants'), 1500);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Update failed');
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -374,19 +406,55 @@ export default function UpdateTenant() {
           </Grid>
 
           <Box sx={{ mt: 3, display: 'flex', gap: 2 }}>
-            <Button type="submit" variant="contained" fullWidth>
-              Update Tenant
+            <Button 
+              type="submit" 
+              variant="contained" 
+              fullWidth
+              disabled={submitting || deleting}
+              startIcon={submitting ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {submitting ? 'Updating...' : 'Update Tenant'}
             </Button>
             <Button
               variant="outlined"
               fullWidth
               onClick={() => navigate('/tenants')}
+              disabled={submitting || deleting}
             >
               Cancel
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              fullWidth
+              onClick={() => setOpenDeleteDialog(true)}
+              disabled={submitting || deleting}
+              startIcon={deleting ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {deleting ? 'Deleting...' : 'Delete'}
             </Button>
           </Box>
         </form>
       </Card>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog
+        open={openDeleteDialog}
+        onClose={() => setOpenDeleteDialog(false)}
+      >
+        <DialogTitle>Delete Tenant</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Are you sure you want to delete this tenant? This action cannot be undone.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setOpenDeleteDialog(false)}>Cancel</Button>
+          <Button onClick={handleDelete} color="error" variant="contained">
+            Delete
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
