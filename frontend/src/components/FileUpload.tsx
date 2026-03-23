@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Box, Paper, Typography, Button } from '@mui/material';
-import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon } from '@mui/icons-material';
+import { CloudUpload as CloudUploadIcon, Delete as DeleteIcon, PictureAsPdf as PdfIcon } from '@mui/icons-material';
 
 interface FileUploadProps {
   label?: string;
@@ -18,16 +18,30 @@ export default function FileUpload({
   value = '',
   onChange,
   onError,
-  accept = 'image/*',
+  accept = 'image/*,application/pdf',
   maxSizeMB = 5,
   previewWidth = 120,
   previewHeight = 80,
 }: FileUploadProps) {
   const [isDragging, setIsDragging] = useState(false);
+  const [fileType, setFileType] = useState<'image' | 'pdf' | null>(null);
+
+  // Detect file type from base64 string when value changes
+  const detectFileType = (base64: string): 'image' | 'pdf' | null => {
+    if (!base64) return null;
+    if (base64.includes('data:application/pdf')) return 'pdf';
+    if (base64.includes('data:image/')) return 'image';
+    return 'image'; // Default to image for backward compatibility
+  };
+
+  const currentFileType = fileType || detectFileType(value);
 
   const handleFileChange = (file: File) => {
-    if (accept === 'image/*' && !file.type.startsWith('image/')) {
-      onError?.('Please upload an image file');
+    const isImage = file.type.startsWith('image/');
+    const isPdf = file.type === 'application/pdf';
+    
+    if (!isImage && !isPdf) {
+      onError?.('Please upload an image or PDF file');
       return;
     }
 
@@ -41,6 +55,7 @@ export default function FileUpload({
     reader.onloadend = () => {
       const base64String = reader.result as string;
       onChange(base64String);
+      setFileType(isImage ? 'image' : 'pdf');
       onError?.(''); // Clear any previous errors
     };
     reader.readAsDataURL(file);
@@ -75,6 +90,7 @@ export default function FileUpload({
 
   const handleRemove = () => {
     onChange('');
+    setFileType(null);
   };
 
   const inputId = `file-upload-${label.replace(/\s+/g, '-').toLowerCase()}`;
@@ -119,7 +135,7 @@ export default function FileUpload({
             Drag and drop file here
           </Typography>
           <Typography variant="body2" color="text.secondary">
-            or click to browse (Max {maxSizeMB}MB)
+            or click to browse (Images or PDF, Max {maxSizeMB}MB)
           </Typography>
         </Paper>
       ) : (
@@ -133,25 +149,43 @@ export default function FileUpload({
           }}
         >
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-            <Box
-              component="img"
-              src={value}
-              alt="Preview"
-              sx={{
-                width: previewWidth,
-                height: previewHeight,
-                objectFit: 'cover',
-                borderRadius: 1,
-                border: '1px solid',
-                borderColor: 'grey.300',
-              }}
-            />
+            {currentFileType === 'pdf' ? (
+              <Box
+                sx={{
+                  width: previewWidth,
+                  height: previewHeight,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  bgcolor: 'error.light',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'grey.300',
+                }}
+              >
+                <PdfIcon sx={{ fontSize: 48, color: 'error.dark' }} />
+              </Box>
+            ) : (
+              <Box
+                component="img"
+                src={value}
+                alt="Preview"
+                sx={{
+                  width: previewWidth,
+                  height: previewHeight,
+                  objectFit: 'cover',
+                  borderRadius: 1,
+                  border: '1px solid',
+                  borderColor: 'grey.300',
+                }}
+              />
+            )}
             <Box sx={{ flex: 1 }}>
               <Typography variant="body2" color="success.main" gutterBottom>
                 ✓ File uploaded successfully
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                Ready for submission
+                {currentFileType === 'pdf' ? 'PDF document ready' : 'Image ready for submission'}
               </Typography>
             </Box>
             <Button

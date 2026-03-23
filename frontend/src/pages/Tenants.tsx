@@ -57,6 +57,13 @@ export default function Tenants() {
     }
   };
 
+  const getFileExtension = (base64: string): string => {
+    if (base64.includes('data:application/pdf')) return 'pdf';
+    if (base64.includes('data:image/png')) return 'png';
+    if (base64.includes('data:image/jpeg') || base64.includes('data:image/jpg')) return 'jpg';
+    return 'jpg'; // default
+  };
+
   // Check if user is owner
   if (user?.role !== 'OWNER') {
     return (
@@ -122,7 +129,7 @@ export default function Tenants() {
                     {tenant.aadharImageUrl ? (
                       <a
                         href={tenant.aadharImageUrl}
-                        download={`aadhar_${tenant.firstName}_${tenant.lastName}.jpg`}
+                        download={`aadhar_${tenant.firstName}_${tenant.lastName}.${getFileExtension(tenant.aadharImageUrl)}`}
                         style={{
                           color: '#1976d2',
                           textDecoration: 'none',

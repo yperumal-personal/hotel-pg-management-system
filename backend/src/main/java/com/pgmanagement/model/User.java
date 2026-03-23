@@ -29,7 +29,7 @@ public class User {
     @Column(name = "aadhar_no", length = 12)
     private String aadharNo;
     
-    @Column(name = "aadhar_image_url", length = 500)
+    @Column(name = "aadhar_image_url", columnDefinition = "TEXT")
     private String aadharImageUrl;
     
     @Enumerated(EnumType.STRING)

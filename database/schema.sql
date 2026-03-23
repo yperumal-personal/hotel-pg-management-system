@@ -13,7 +13,7 @@ CREATE TABLE users (
     last_name VARCHAR(100) NOT NULL,
     phone VARCHAR(20),
     aadhar_no VARCHAR(12),
-    aadhar_image_url VARCHAR(500),
+    aadhar_image_url TEXT,
     work_status VARCHAR(20) CHECK (work_status IN ('EMPLOYEE', 'STUDENT')),
     employee_name VARCHAR(255),
     college_name VARCHAR(255),
