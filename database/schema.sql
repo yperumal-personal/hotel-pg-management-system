@@ -26,6 +26,10 @@ CREATE TABLE users (
     marital_status VARCHAR(20) CHECK (marital_status IN ('MARRIED', 'UNMARRIED')),
     role VARCHAR(20) NOT NULL CHECK (role IN ('OWNER', 'TENANT', 'STAFF', 'ADMIN')),
     status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
+    check_in_date DATE,
+    check_out_date DATE,
+    stay_schedule VARCHAR(10) CHECK (stay_schedule IN ('DAY', 'MONTH')),
+    stay_duration INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -111,3 +115,15 @@ CREATE INDEX idx_payments_due_date ON payments(due_date);
 -- Insert sample admin user (password: admin123)
 INSERT INTO users (email, password, first_name, last_name, role) 
 VALUES ('admin@pgmanagement.com', '$2a$10$N.zmdr9k7uOCQb376NoUnuTJ8iAt6Z5EHsM8lE9P8jW9TukLv3ZRG', 'Admin', 'User', 'ADMIN');
+
+-- Pricing configuration table
+CREATE TABLE pricing_config (
+    id BIGSERIAL PRIMARY KEY,
+    plan_type VARCHAR(10) NOT NULL UNIQUE CHECK (plan_type IN ('DAY', 'MONTH')),
+    cost_per_unit DECIMAL(10,2) NOT NULL,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Default pricing: 1000/day, 10000/month
+INSERT INTO pricing_config (plan_type, cost_per_unit) VALUES ('DAY', 1000.00);
+INSERT INTO pricing_config (plan_type, cost_per_unit) VALUES ('MONTH', 10000.00);

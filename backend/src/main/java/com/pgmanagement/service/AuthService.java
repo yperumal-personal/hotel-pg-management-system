@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.time.LocalDate;
 
 @Service
 public class AuthService {
@@ -68,6 +69,20 @@ public class AuthService {
         if (request.getMaritalStatus() != null && !request.getMaritalStatus().isEmpty()) {
             user.setMaritalStatus(User.MaritalStatus.valueOf(request.getMaritalStatus()));
         }
+        
+        if (request.getCheckInDate() != null && !request.getCheckInDate().isEmpty()) {
+            user.setCheckInDate(LocalDate.parse(request.getCheckInDate()));
+        }
+
+        if (request.getCheckOutDate() != null && !request.getCheckOutDate().isEmpty()) {
+            user.setCheckOutDate(LocalDate.parse(request.getCheckOutDate()));
+        }
+
+        if (request.getStaySchedule() != null && !request.getStaySchedule().isEmpty()) {
+            user.setStaySchedule(User.StaySchedule.valueOf(request.getStaySchedule()));
+        }
+
+        user.setStayDuration(request.getStayDuration());
         
         user.setRole(User.Role.valueOf(request.getRole()));
         user.setStatus(User.Status.ACTIVE);

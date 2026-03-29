@@ -1,6 +1,7 @@
 package com.pgmanagement.model;
 
 import jakarta.persistence.*;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 @Entity
@@ -72,6 +73,19 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(length = 20)
     private Status status = Status.ACTIVE;
+
+    @Column(name = "check_in_date")
+    private LocalDate checkInDate;
+
+    @Column(name = "check_out_date")
+    private LocalDate checkOutDate;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "stay_schedule", length = 10)
+    private StaySchedule staySchedule;
+
+    @Column(name = "stay_duration")
+    private Integer stayDuration;
     
     @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
@@ -109,6 +123,10 @@ public class User {
     
     public enum MaritalStatus {
         MARRIED, UNMARRIED
+    }
+
+    public enum StaySchedule {
+        DAY, MONTH
     }
     
     // Constructors
@@ -297,5 +315,37 @@ public class User {
     
     public void setMaritalStatus(MaritalStatus maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    public LocalDate getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public StaySchedule getStaySchedule() {
+        return staySchedule;
+    }
+
+    public void setStaySchedule(StaySchedule staySchedule) {
+        this.staySchedule = staySchedule;
+    }
+
+    public Integer getStayDuration() {
+        return stayDuration;
+    }
+
+    public void setStayDuration(Integer stayDuration) {
+        this.stayDuration = stayDuration;
     }
 }

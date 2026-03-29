@@ -92,6 +92,10 @@ export interface Tenant {
   maritalStatus?: 'MARRIED' | 'UNMARRIED';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   createdAt: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  staySchedule?: 'DAY' | 'MONTH';
+  stayDuration?: number;
 }
 
 export interface UpdateTenantStatusRequest {
@@ -101,4 +105,10 @@ export interface UpdateTenantStatusRequest {
 export interface AuthResponse {
   token: string;
   user: User;
+}
+
+export interface PricingConfig {
+  id: number;
+  planType: 'DAY' | 'MONTH';
+  costPerUnit: number;
 }
