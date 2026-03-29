@@ -21,6 +21,7 @@ export interface TenantFormData {
   state: string;
   pinCode: string;
   checkInDate: string;
+  checkOutDate: string;
   staySchedule: string;
   stayDuration: number;
 }
@@ -45,6 +46,7 @@ const defaultValues: TenantFormData = {
   state: '',
   pinCode: '',
   checkInDate: '',
+  checkOutDate: '',
   staySchedule: '',
   stayDuration: 1,
 };
@@ -52,9 +54,23 @@ const defaultValues: TenantFormData = {
 export function useTenantForm(initialValues?: Partial<TenantFormData>) {
   const [formData, setFormData] = useState<TenantFormData>({ ...defaultValues, ...initialValues });
 
+  const computeCheckOut = (checkInDate: string, staySchedule: string, stayDuration: number): string => {
+    if (!checkInDate || !staySchedule) return '';
+    const date = new Date(checkInDate);
+    if (staySchedule === 'DAY') date.setDate(date.getDate() + stayDuration);
+    else date.setMonth(date.getMonth() + stayDuration);
+    return date.toISOString().split('T')[0];
+  };
+
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
+    setFormData(prev => {
+      const updated = { ...prev, [name]: value };
+      if (name === 'checkInDate') {
+        updated.checkOutDate = computeCheckOut(value, prev.staySchedule, prev.stayDuration);
+      }
+      return updated;
+    });
   };
 
   const handleAadharImageChange = (base64: string) => {
@@ -62,20 +78,30 @@ export function useTenantForm(initialValues?: Partial<TenantFormData>) {
   };
 
   const handleStayScheduleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setFormData(prev => ({ ...prev, staySchedule: e.target.value, stayDuration: 1 }));
+    const newSchedule = e.target.value;
+    setFormData(prev => ({
+      ...prev,
+      staySchedule: newSchedule,
+      stayDuration: 1,
+      checkOutDate: computeCheckOut(prev.checkInDate, newSchedule, 1),
+    }));
   };
 
   const handleIncrementDuration = () => {
     setFormData(prev => {
       const max = prev.staySchedule === 'DAY' ? 30 : 12;
-      return prev.stayDuration < max ? { ...prev, stayDuration: prev.stayDuration + 1 } : prev;
+      if (prev.stayDuration >= max) return prev;
+      const newDuration = prev.stayDuration + 1;
+      return { ...prev, stayDuration: newDuration, checkOutDate: computeCheckOut(prev.checkInDate, prev.staySchedule, newDuration) };
     });
   };
 
   const handleDecrementDuration = () => {
-    setFormData(prev =>
-      prev.stayDuration > 1 ? { ...prev, stayDuration: prev.stayDuration - 1 } : prev
-    );
+    setFormData(prev => {
+      if (prev.stayDuration <= 1) return prev;
+      const newDuration = prev.stayDuration - 1;
+      return { ...prev, stayDuration: newDuration, checkOutDate: computeCheckOut(prev.checkInDate, prev.staySchedule, newDuration) };
+    });
   };
 
   const validate = (): string | null => {

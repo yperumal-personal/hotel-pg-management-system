@@ -26,6 +26,7 @@ interface AuthContextType {
     maritalStatus?: string;
     role: string;
     checkInDate?: string;
+    checkOutDate?: string;
     staySchedule?: string;
     stayDuration?: number;
   }) => Promise<void>;
@@ -77,6 +78,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     maritalStatus?: string;
     role: string;
     checkInDate?: string;
+    checkOutDate?: string;
     staySchedule?: string;
     stayDuration?: number;
   }) => {

@@ -69,6 +69,7 @@ export default function TenantRegister() {
         maritalStatus: formData.maritalStatus || undefined,
         role: 'TENANT',
         checkInDate: formData.checkInDate || undefined,
+        checkOutDate: formData.checkOutDate || undefined,
         staySchedule: formData.staySchedule || undefined,
         stayDuration: formData.stayDuration,
       });

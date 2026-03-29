@@ -63,6 +63,7 @@ public class RegisterRequest {
     private String role;
 
     private String checkInDate;
+    private String checkOutDate;
 
     private String staySchedule;
 
@@ -222,6 +223,14 @@ public class RegisterRequest {
 
     public void setCheckInDate(String checkInDate) {
         this.checkInDate = checkInDate;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 
     public String getStaySchedule() {

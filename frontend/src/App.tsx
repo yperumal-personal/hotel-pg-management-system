@@ -11,6 +11,7 @@ import StaffRegister from './pages/register/StaffRegister';
 import Dashboard from './pages/Dashboard';
 import Properties from './pages/Properties';
 import Tenants from './pages/Tenants';
+import ViewTenant from './pages/ViewTenant';
 import UpdateTenant from './pages/UpdateTenant';
 
 const theme = createTheme({
@@ -38,6 +39,7 @@ function App() {
               <Route path="properties" element={<Properties />} />
               <Route path="rooms" element={<div>Rooms Page</div>} />
               <Route path="tenants" element={<Tenants />} />
+              <Route path="tenants/view/:id" element={<ViewTenant />} />
               <Route path="tenants/edit/:id" element={<UpdateTenant />} />
               <Route path="payments" element={<div>Payments Page</div>} />
             </Route>

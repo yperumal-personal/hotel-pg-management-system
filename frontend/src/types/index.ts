@@ -92,6 +92,10 @@ export interface Tenant {
   maritalStatus?: 'MARRIED' | 'UNMARRIED';
   status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
   createdAt: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  staySchedule?: 'DAY' | 'MONTH';
+  stayDuration?: number;
 }
 
 export interface UpdateTenantStatusRequest {

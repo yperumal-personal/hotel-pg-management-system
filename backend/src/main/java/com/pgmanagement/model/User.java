@@ -77,6 +77,9 @@ public class User {
     @Column(name = "check_in_date")
     private LocalDate checkInDate;
 
+    @Column(name = "check_out_date")
+    private LocalDate checkOutDate;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "stay_schedule", length = 10)
     private StaySchedule staySchedule;
@@ -320,6 +323,14 @@ public class User {
 
     public void setCheckInDate(LocalDate checkInDate) {
         this.checkInDate = checkInDate;
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
 
     public StaySchedule getStaySchedule() {

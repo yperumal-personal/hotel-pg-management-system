@@ -29,6 +29,17 @@ interface Props {
   pricingRates: { DAY: number | null; MONTH: number | null };
 }
 
+function computeCheckOutDate(checkInDate: string, staySchedule: string, stayDuration: number): string {
+  if (!checkInDate || !staySchedule) return '';
+  const date = new Date(checkInDate);
+  if (staySchedule === 'DAY') {
+    date.setDate(date.getDate() + stayDuration);
+  } else {
+    date.setMonth(date.getMonth() + stayDuration);
+  }
+  return date.toISOString().split('T')[0];
+}
+
 export default function StayScheduleFields({
   values,
   onChange,
@@ -38,6 +49,7 @@ export default function StayScheduleFields({
   pricingRates,
 }: Props) {
   const rate = values.staySchedule ? pricingRates[values.staySchedule as 'DAY' | 'MONTH'] : null;
+  const checkOutDate = computeCheckOutDate(values.checkInDate, values.staySchedule, values.stayDuration);
 
   return (
     <>
@@ -107,6 +119,19 @@ export default function StayScheduleFields({
               {values.staySchedule === 'DAY' ? 'day(s)' : 'month(s)'}
             </Typography>
           </Box>
+        </Grid>
+      )}
+
+      {checkOutDate && (
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Check Out Date"
+            value={checkOutDate}
+            InputProps={{ readOnly: true }}
+            InputLabelProps={{ shrink: true }}
+            helperText="Auto-calculated from check-in date and duration"
+          />
         </Grid>
       )}
 

@@ -27,6 +27,7 @@ CREATE TABLE users (
     role VARCHAR(20) NOT NULL CHECK (role IN ('OWNER', 'TENANT', 'STAFF', 'ADMIN')),
     status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
     check_in_date DATE,
+    check_out_date DATE,
     stay_schedule VARCHAR(10) CHECK (stay_schedule IN ('DAY', 'MONTH')),
     stay_duration INTEGER,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,

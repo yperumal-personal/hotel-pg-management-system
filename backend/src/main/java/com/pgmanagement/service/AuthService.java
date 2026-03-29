@@ -74,6 +74,10 @@ public class AuthService {
             user.setCheckInDate(LocalDate.parse(request.getCheckInDate()));
         }
 
+        if (request.getCheckOutDate() != null && !request.getCheckOutDate().isEmpty()) {
+            user.setCheckOutDate(LocalDate.parse(request.getCheckOutDate()));
+        }
+
         if (request.getStaySchedule() != null && !request.getStaySchedule().isEmpty()) {
             user.setStaySchedule(User.StaySchedule.valueOf(request.getStaySchedule()));
         }

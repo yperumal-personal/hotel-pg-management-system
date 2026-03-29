@@ -25,6 +25,7 @@ public class UserResponse {
     private String role;
     private String status;
     private LocalDate checkInDate;
+    private LocalDate checkOutDate;
     private String staySchedule;
     private Integer stayDuration;
     
@@ -52,8 +53,17 @@ public class UserResponse {
         this.role = user.getRole().name();
         this.status = user.getStatus().name();
         this.checkInDate = user.getCheckInDate();
+        this.checkOutDate = user.getCheckOutDate();
         this.staySchedule = user.getStaySchedule() != null ? user.getStaySchedule().name() : null;
         this.stayDuration = user.getStayDuration();
+    }
+
+    public LocalDate getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(LocalDate checkOutDate) {
+        this.checkOutDate = checkOutDate;
     }
     
     // Getters and Setters

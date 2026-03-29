@@ -25,6 +25,10 @@ public class TenantResponse {
     private String maritalStatus;
     private String status;
     private LocalDateTime createdAt;
+    private String checkInDate;
+    private String checkOutDate;
+    private String staySchedule;
+    private Integer stayDuration;
     
     // Constructors
     public TenantResponse() {}
@@ -49,6 +53,10 @@ public class TenantResponse {
         this.maritalStatus = user.getMaritalStatus() != null ? user.getMaritalStatus().name() : null;
         this.status = user.getStatus().name();
         this.createdAt = user.getCreatedAt();
+        this.checkInDate = user.getCheckInDate() != null ? user.getCheckInDate().toString() : null;
+        this.checkOutDate = user.getCheckOutDate() != null ? user.getCheckOutDate().toString() : null;
+        this.staySchedule = user.getStaySchedule() != null ? user.getStaySchedule().name() : null;
+        this.stayDuration = user.getStayDuration();
     }
     
     // Getters and Setters
@@ -202,5 +210,37 @@ public class TenantResponse {
     
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
+    }
+
+    public String getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public String getStaySchedule() {
+        return staySchedule;
+    }
+
+    public void setStaySchedule(String staySchedule) {
+        this.staySchedule = staySchedule;
+    }
+
+    public Integer getStayDuration() {
+        return stayDuration;
+    }
+
+    public void setStayDuration(Integer stayDuration) {
+        this.stayDuration = stayDuration;
     }
 }

@@ -13,9 +13,7 @@ import {
   Chip,
   CircularProgress,
   Alert,
-  IconButton,
 } from '@mui/material';
-import { Edit as EditIcon } from '@mui/icons-material';
 import { tenantService } from '../services/tenantService';
 import { Tenant } from '../types';
 import { useAuth } from '../contexts/AuthContext';
@@ -44,24 +42,24 @@ export default function Tenants() {
     }
   };
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'ACTIVE':
-        return 'success';
-      case 'INACTIVE':
-        return 'default';
-      case 'SUSPENDED':
-        return 'error';
-      default:
-        return 'default';
+  const getStayStatus = (checkOutDate?: string) => {
+    if (!checkOutDate) return { label: 'N/A', color: 'default' as const };
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const checkout = new Date(checkOutDate);
+    if (checkout >= today) {
+      return { label: 'ACTIVE', color: 'success' as const };
     }
+    return { label: 'To be Extended', color: 'error' as const };
   };
 
-  const getFileExtension = (base64: string): string => {
-    if (base64.includes('data:application/pdf')) return 'pdf';
-    if (base64.includes('data:image/png')) return 'png';
-    if (base64.includes('data:image/jpeg') || base64.includes('data:image/jpg')) return 'jpg';
-    return 'jpg'; // default
+  const formatDate = (dateStr?: string) => {
+    if (!dateStr) return 'N/A';
+    return new Date(dateStr).toLocaleDateString('en-IN', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+    });
   };
 
   // Check if user is owner
@@ -99,71 +97,52 @@ export default function Tenants() {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Name</TableCell>
-              <TableCell>Email</TableCell>
-              <TableCell>Phone</TableCell>
-              <TableCell>Aadhar No</TableCell>
-              <TableCell>Aadhar Image</TableCell>
-              <TableCell>Status</TableCell>
-              <TableCell>Joined Date</TableCell>
-              <TableCell>Actions</TableCell>
+              <TableCell><strong>Name</strong></TableCell>
+              <TableCell><strong>Phone No</strong></TableCell>
+              <TableCell><strong>Check In Date</strong></TableCell>
+              <TableCell><strong>Check Out Date</strong></TableCell>
+              <TableCell><strong>Status</strong></TableCell>
+              <TableCell><strong>Stay Schedule</strong></TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {tenants.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} align="center">
+                <TableCell colSpan={6} align="center">
                   No tenants found.
                 </TableCell>
               </TableRow>
             ) : (
-              tenants.map((tenant) => (
-                <TableRow key={tenant.id} hover>
-                  <TableCell>
-                    {tenant.firstName} {tenant.lastName}
-                  </TableCell>
-                  <TableCell>{tenant.email}</TableCell>
-                  <TableCell>{tenant.phone || 'N/A'}</TableCell>
-                  <TableCell>{tenant.aadharNo || 'N/A'}</TableCell>
-                  <TableCell>
-                    {tenant.aadharImageUrl ? (
-                      <a
-                        href={tenant.aadharImageUrl}
-                        download={`aadhar_${tenant.firstName}_${tenant.lastName}.${getFileExtension(tenant.aadharImageUrl)}`}
-                        style={{
-                          color: '#1976d2',
-                          textDecoration: 'none',
-                          cursor: 'pointer',
-                        }}
-                      >
-                        Download
-                      </a>
-                    ) : (
-                      'N/A'
-                    )}
-                  </TableCell>
-                  <TableCell>
-                    <Chip
-                      label={tenant.status}
-                      color={getStatusColor(tenant.status) as any}
-                      size="small"
-                    />
-                  </TableCell>
-                  <TableCell>
-                    {new Date(tenant.createdAt).toLocaleDateString()}
-                  </TableCell>
-                  <TableCell>
-                    <IconButton
-                      size="small"
-                      color="primary"
-                      onClick={() => navigate(`/tenants/edit/${tenant.id}`)}
-                      title="Edit tenant"
-                    >
-                      <EditIcon />
-                    </IconButton>
-                  </TableCell>
-                </TableRow>
-              ))
+              tenants.map((tenant) => {
+                const stayStatus = getStayStatus(tenant.checkOutDate);
+                return (
+                  <TableRow
+                    key={tenant.id}
+                    hover
+                    onClick={() => navigate(`/tenants/view/${tenant.id}`)}
+                    sx={{ cursor: 'pointer' }}
+                  >
+                    <TableCell>
+                      {tenant.firstName} {tenant.lastName}
+                    </TableCell>
+                    <TableCell>{tenant.phone || 'N/A'}</TableCell>
+                    <TableCell>{formatDate(tenant.checkInDate)}</TableCell>
+                    <TableCell>{formatDate(tenant.checkOutDate)}</TableCell>
+                    <TableCell>
+                      <Chip
+                        label={stayStatus.label}
+                        color={stayStatus.color}
+                        size="small"
+                      />
+                    </TableCell>
+                    <TableCell>
+                      {tenant.staySchedule
+                        ? `${tenant.staySchedule.charAt(0) + tenant.staySchedule.slice(1).toLowerCase()}${tenant.stayDuration ? ` (${tenant.stayDuration})` : ''}`
+                        : 'N/A'}
+                    </TableCell>
+                  </TableRow>
+                );
+              })
             )}
           </TableBody>
         </Table>
