@@ -102,3 +102,9 @@ export interface AuthResponse {
   token: string;
   user: User;
 }
+
+export interface PricingConfig {
+  id: number;
+  planType: 'DAY' | 'MONTH';
+  costPerUnit: number;
+}

@@ -1,6 +1,5 @@
 package com.pgmanagement.dto;
 
-import com.pgmanagement.model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
@@ -62,6 +61,12 @@ public class RegisterRequest {
     @NotBlank(message = "Role is required")
     @Pattern(regexp = "OWNER|TENANT|STAFF|ADMIN", message = "Invalid role")
     private String role;
+
+    private String checkInDate;
+
+    private String staySchedule;
+
+    private Integer stayDuration;
     
     // Constructors
     public RegisterRequest() {}
@@ -209,5 +214,29 @@ public class RegisterRequest {
     
     public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    public String getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public String getStaySchedule() {
+        return staySchedule;
+    }
+
+    public void setStaySchedule(String staySchedule) {
+        this.staySchedule = staySchedule;
+    }
+
+    public Integer getStayDuration() {
+        return stayDuration;
+    }
+
+    public void setStayDuration(Integer stayDuration) {
+        this.stayDuration = stayDuration;
     }
 }

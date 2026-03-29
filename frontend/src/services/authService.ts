@@ -14,6 +14,7 @@ export const authService = {
     lastName: string;
     phone?: string;
     role: string;
+    [key: string]: unknown;
   }): Promise<AuthResponse> => {
     const response = await api.post('/auth/register', userData);
     return response.data;

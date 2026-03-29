@@ -1,6 +1,7 @@
 package com.pgmanagement.dto;
 
 import com.pgmanagement.model.User;
+import java.time.LocalDate;
 
 public class UserResponse {
     
@@ -23,6 +24,9 @@ public class UserResponse {
     private String maritalStatus;
     private String role;
     private String status;
+    private LocalDate checkInDate;
+    private String staySchedule;
+    private Integer stayDuration;
     
     // Constructors
     public UserResponse() {}
@@ -47,6 +51,9 @@ public class UserResponse {
         this.maritalStatus = user.getMaritalStatus() != null ? user.getMaritalStatus().name() : null;
         this.role = user.getRole().name();
         this.status = user.getStatus().name();
+        this.checkInDate = user.getCheckInDate();
+        this.staySchedule = user.getStaySchedule() != null ? user.getStaySchedule().name() : null;
+        this.stayDuration = user.getStayDuration();
     }
     
     // Getters and Setters
@@ -200,5 +207,29 @@ public class UserResponse {
     
     public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    public LocalDate getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(LocalDate checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public String getStaySchedule() {
+        return staySchedule;
+    }
+
+    public void setStaySchedule(String staySchedule) {
+        this.staySchedule = staySchedule;
+    }
+
+    public Integer getStayDuration() {
+        return stayDuration;
+    }
+
+    public void setStayDuration(Integer stayDuration) {
+        this.stayDuration = stayDuration;
     }
 }

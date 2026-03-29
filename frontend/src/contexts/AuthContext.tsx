@@ -25,6 +25,9 @@ interface AuthContextType {
     gender?: string;
     maritalStatus?: string;
     role: string;
+    checkInDate?: string;
+    staySchedule?: string;
+    stayDuration?: number;
   }) => Promise<void>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -73,6 +76,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     gender?: string;
     maritalStatus?: string;
     role: string;
+    checkInDate?: string;
+    staySchedule?: string;
+    stayDuration?: number;
   }) => {
     const { token, user } = await authService.register(userData);
     localStorage.setItem('token', token);
