@@ -50,9 +50,6 @@ public class UpdateTenantRequest {
     @Pattern(regexp = "MARRIED|UNMARRIED", message = "Marital status must be MARRIED or UNMARRIED")
     private String maritalStatus;
     
-    @Pattern(regexp = "ACTIVE|INACTIVE|SUSPENDED", message = "Status must be ACTIVE, INACTIVE, or SUSPENDED")
-    private String status;
-    
     // Constructors
     public UpdateTenantRequest() {}
     
@@ -183,13 +180,5 @@ public class UpdateTenantRequest {
     
     public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
-    }
-    
-    public String getStatus() {
-        return status;
-    }
-    
-    public void setStatus(String status) {
-        this.status = status;
     }
 }

@@ -88,12 +88,7 @@ public class TenantService {
         if (request.getMaritalStatus() != null && !request.getMaritalStatus().isEmpty()) {
             tenant.setMaritalStatus(User.MaritalStatus.valueOf(request.getMaritalStatus()));
         }
-        
-        // Update status
-        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
-            tenant.setStatus(User.Status.valueOf(request.getStatus()));
-        }
-        
+
         return tenantRepository.save(tenant);
     }
     

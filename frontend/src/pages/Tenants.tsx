@@ -42,15 +42,12 @@ export default function Tenants() {
     }
   };
 
-  const getStayStatus = (checkOutDate?: string) => {
-    if (!checkOutDate) return { label: 'N/A', color: 'default' as const };
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkout = new Date(checkOutDate);
-    if (checkout >= today) {
-      return { label: 'ACTIVE', color: 'success' as const };
+  const getStatusChip = (status: Tenant['status']) => {
+    switch (status) {
+      case 'TO_BE_EXTENDED': return { label: 'To Be Extended', color: 'warning' as const };
+      case 'CLOSED':         return { label: 'Closed',          color: 'default' as const };
+      default:               return { label: 'Active',          color: 'success' as const };
     }
-    return { label: 'To be Extended', color: 'error' as const };
   };
 
   const formatDate = (dateStr?: string) => {
@@ -114,7 +111,7 @@ export default function Tenants() {
               </TableRow>
             ) : (
               tenants.map((tenant) => {
-                const stayStatus = getStayStatus(tenant.checkOutDate);
+                const stayStatus = getStatusChip(tenant.status);
                 return (
                   <TableRow
                     key={tenant.id}

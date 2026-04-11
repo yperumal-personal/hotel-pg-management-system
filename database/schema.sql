@@ -25,7 +25,7 @@ CREATE TABLE users (
     gender VARCHAR(20) CHECK (gender IN ('MALE', 'FEMALE', 'OTHER')),
     marital_status VARCHAR(20) CHECK (marital_status IN ('MARRIED', 'UNMARRIED')),
     role VARCHAR(20) NOT NULL CHECK (role IN ('OWNER', 'TENANT', 'STAFF', 'ADMIN')),
-    status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'INACTIVE', 'SUSPENDED')),
+    status VARCHAR(20) DEFAULT 'ACTIVE' CHECK (status IN ('ACTIVE', 'TO_BE_EXTENDED', 'CLOSED')),
     check_in_date DATE,
     check_out_date DATE,
     stay_schedule VARCHAR(10) CHECK (stay_schedule IN ('DAY', 'MONTH')),
