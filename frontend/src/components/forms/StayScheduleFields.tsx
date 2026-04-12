@@ -27,6 +27,7 @@ interface Props {
   onIncrement: () => void;
   onDecrement: () => void;
   pricingRates: { DAY: number | null; MONTH: number | null };
+  showCheckInDate?: boolean;
 }
 
 function computeCheckOutDate(checkInDate: string, staySchedule: string, stayDuration: number): string {
@@ -47,25 +48,28 @@ export default function StayScheduleFields({
   onIncrement,
   onDecrement,
   pricingRates,
+  showCheckInDate = true,
 }: Props) {
   const rate = values.staySchedule ? pricingRates[values.staySchedule as 'DAY' | 'MONTH'] : null;
   const checkOutDate = computeCheckOutDate(values.checkInDate, values.staySchedule, values.stayDuration);
 
   return (
     <>
-      <Grid item xs={12}>
-        <TextField
-          fullWidth
-          label="Check In Date"
-          name="checkInDate"
-          type="date"
-          value={values.checkInDate}
-          onChange={onChange}
-          required
-          InputLabelProps={{ shrink: true }}
-          inputProps={{ min: new Date().toISOString().split('T')[0] }}
-        />
-      </Grid>
+      {showCheckInDate && (
+        <Grid item xs={12}>
+          <TextField
+            fullWidth
+            label="Check In Date"
+            name="checkInDate"
+            type="date"
+            value={values.checkInDate}
+            onChange={onChange}
+            required
+            InputLabelProps={{ shrink: true }}
+            inputProps={{ min: new Date().toISOString().split('T')[0] }}
+          />
+        </Grid>
+      )}
       <Grid item xs={12}>
         <FormControl component="fieldset" required>
           <FormLabel component="legend" sx={{ mb: 1, fontWeight: 500 }}>
