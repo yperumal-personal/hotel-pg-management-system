@@ -21,6 +21,13 @@ export interface UpdateTenantData {
   status?: string;
 }
 
+export interface ExtendStayData {
+  checkOutDate: string;
+  staySchedule: 'DAY' | 'MONTH';
+  stayDuration: number;
+  status: string;
+}
+
 export const tenantService = {
   /**
    * Get all tenants
@@ -41,4 +48,9 @@ export const tenantService = {
    * Delete tenant
    */
   deleteTenant: (id: number) => api.delete(`/tenants/${id}`),
+  
+  /**
+   * Extend tenant stay
+   */
+  extendStay: (id: number, data: ExtendStayData) => api.put<Tenant>(`/tenants/${id}`, data),
 };

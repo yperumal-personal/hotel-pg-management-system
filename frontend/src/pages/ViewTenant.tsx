@@ -234,8 +234,18 @@ export default function ViewTenant() {
         </Grid>
       </SectionCard>
 
-      {/* Edit Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+      {/* Action Buttons */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1.5 }}>
+        {tenant.status === 'TO_BE_EXTENDED' && (
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => navigate(`/tenants/extend/${tenant.id}`)}
+            size="large"
+          >
+            Extend Stay
+          </Button>
+        )}
         <Button
           variant="contained"
           startIcon={<EditIcon />}
