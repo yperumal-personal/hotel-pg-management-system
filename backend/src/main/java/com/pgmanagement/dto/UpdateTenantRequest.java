@@ -49,6 +49,18 @@ public class UpdateTenantRequest {
     
     @Pattern(regexp = "MARRIED|UNMARRIED", message = "Marital status must be MARRIED or UNMARRIED")
     private String maritalStatus;
+
+    private String checkInDate;
+
+    private String checkOutDate;
+
+    @Pattern(regexp = "DAY|MONTH", message = "Stay schedule must be DAY or MONTH")
+    private String staySchedule;
+
+    private Integer stayDuration;
+
+    @Pattern(regexp = "ACTIVE|TO_BE_EXTENDED|CLOSED", message = "Status must be ACTIVE, TO_BE_EXTENDED, or CLOSED")
+    private String status;
     
     // Constructors
     public UpdateTenantRequest() {}
@@ -180,5 +192,45 @@ public class UpdateTenantRequest {
     
     public void setMaritalStatus(String maritalStatus) {
         this.maritalStatus = maritalStatus;
+    }
+
+    public String getCheckInDate() {
+        return checkInDate;
+    }
+
+    public void setCheckInDate(String checkInDate) {
+        this.checkInDate = checkInDate;
+    }
+
+    public String getCheckOutDate() {
+        return checkOutDate;
+    }
+
+    public void setCheckOutDate(String checkOutDate) {
+        this.checkOutDate = checkOutDate;
+    }
+
+    public String getStaySchedule() {
+        return staySchedule;
+    }
+
+    public void setStaySchedule(String staySchedule) {
+        this.staySchedule = staySchedule;
+    }
+
+    public Integer getStayDuration() {
+        return stayDuration;
+    }
+
+    public void setStayDuration(Integer stayDuration) {
+        this.stayDuration = stayDuration;
+    }
+
+    public String getStatus() {
+        return status;
+    }
+
+    public void setStatus(String status) {
+        this.status = status;
     }
 }

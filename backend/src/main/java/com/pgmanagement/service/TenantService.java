@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -89,6 +90,23 @@ public class TenantService {
             tenant.setMaritalStatus(User.MaritalStatus.valueOf(request.getMaritalStatus()));
         }
 
+        // Update stay details
+        if (request.getCheckInDate() != null && !request.getCheckInDate().isEmpty()) {
+            tenant.setCheckInDate(LocalDate.parse(request.getCheckInDate()));
+        }
+        if (request.getCheckOutDate() != null && !request.getCheckOutDate().isEmpty()) {
+            tenant.setCheckOutDate(LocalDate.parse(request.getCheckOutDate()));
+        }
+        if (request.getStaySchedule() != null && !request.getStaySchedule().isEmpty()) {
+            tenant.setStaySchedule(User.StaySchedule.valueOf(request.getStaySchedule()));
+        }
+        if (request.getStayDuration() != null) {
+            tenant.setStayDuration(request.getStayDuration());
+        }
+        if (request.getStatus() != null && !request.getStatus().isEmpty()) {
+            tenant.setStatus(User.Status.valueOf(request.getStatus()));
+        }
+
         return tenantRepository.save(tenant);
     }
     
@@ -101,4 +119,3 @@ public class TenantService {
         tenantRepository.delete(tenant);
     }
 }
-

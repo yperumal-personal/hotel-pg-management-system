@@ -18,6 +18,10 @@ export interface UpdateTenantData {
   pinCode?: string;
   gender?: string;
   maritalStatus?: string;
+  checkInDate?: string;
+  checkOutDate?: string;
+  staySchedule?: 'DAY' | 'MONTH';
+  stayDuration?: number;
   status?: string;
 }
 
