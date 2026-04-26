@@ -55,12 +55,19 @@ export default function ExtendStay() {
       .finally(() => setLoading(false));
 
     // Fetch pricing rates
-    pricingService.getPricing('DAY').then((res) => {
-      setPricingRates((prev) => ({ ...prev, DAY: res.data.costPerUnit }));
-    });
-    pricingService.getPricing('MONTH').then((res) => {
-      setPricingRates((prev) => ({ ...prev, MONTH: res.data.costPerUnit }));
-    });
+    Promise.all([
+      pricingService.getPricing('DAY'),
+      pricingService.getPricing('MONTH'),
+    ])
+      .then(([dayRes, monthRes]) => {
+        setPricingRates({
+          DAY: dayRes.data.costPerUnit,
+          MONTH: monthRes.data.costPerUnit,
+        });
+      })
+      .catch((err: any) => {
+        setError((prev) => prev || err.response?.data?.message || 'Failed to load pricing rates');
+      });
   }, [id]);
 
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -185,6 +192,12 @@ export default function ExtendStay() {
             </Typography>
           </Box>
 
+          {!tenant?.checkOutDate && (
+            <Alert severity="warning" sx={{ mb: 2 }}>
+              This tenant has no current check-out date. A check-out date must be set before extending the stay.
+            </Alert>
+          )}
+
           <Grid container spacing={3}>
             {/* Extension Duration Label */}
             <Grid item xs={12}>
@@ -202,6 +215,7 @@ export default function ExtendStay() {
               onDecrement={handleDecrement}
               pricingRates={pricingRates}
               showCheckInDate={false}
+              disableScheduleChange={true}
             />
 
             {/* New Check-Out Date */}
@@ -243,7 +257,7 @@ export default function ExtendStay() {
             <Button
               variant="contained"
               onClick={handleSubmit}
-              disabled={submitting || !rate}
+              disabled={submitting || !rate || !newCheckOutDate}
               size="large"
             >
               {submitting ? <CircularProgress size={24} /> : 'Confirm Extension'}

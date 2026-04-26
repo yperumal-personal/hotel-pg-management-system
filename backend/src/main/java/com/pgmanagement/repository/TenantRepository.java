@@ -19,27 +19,30 @@ public interface TenantRepository extends JpaRepository<User, Long> {
     List<User> findByRole(User.Role role);
 
     /**
-     * Set status = ACTIVE for tenants whose checkout date is after tomorrow
+     * Set status = ACTIVE for tenants whose checkout date is after tomorrow or is NULL
      */
     @Modifying
-    @Query("UPDATE User u SET u.status = :status WHERE u.role = 'TENANT' AND u.checkOutDate > :tomorrow")
+    @Query("UPDATE User u SET u.status = :status WHERE u.role = :role AND (u.checkOutDate IS NULL OR u.checkOutDate > :tomorrow)")
     int updateStatusForActiveTenants(@Param("status") User.Status status,
+                                     @Param("role") User.Role role,
                                      @Param("tomorrow") LocalDate tomorrow);
 
     /**
      * Set status = TO_BE_EXTENDED for tenants whose checkout date is today or tomorrow
      */
     @Modifying
-    @Query("UPDATE User u SET u.status = :status WHERE u.role = 'TENANT' AND u.checkOutDate >= :today AND u.checkOutDate <= :tomorrow")
+    @Query("UPDATE User u SET u.status = :status WHERE u.role = :role AND u.checkOutDate >= :today AND u.checkOutDate <= :tomorrow")
     int updateStatusForToBeExtendedTenants(@Param("status") User.Status status,
+                                           @Param("role") User.Role role,
                                            @Param("today") LocalDate today,
                                            @Param("tomorrow") LocalDate tomorrow);
 
     /**
-     * Set status = CLOSED for tenants whose checkout date was 2 or more days ago
+     * Set status = CLOSED for tenants whose checkout date is before today (yesterday or earlier)
      */
     @Modifying
-    @Query("UPDATE User u SET u.status = :status WHERE u.role = 'TENANT' AND u.checkOutDate < :twoDaysAgo")
+    @Query("UPDATE User u SET u.status = :status WHERE u.role = :role AND u.checkOutDate < :today")
     int updateStatusForClosedTenants(@Param("status") User.Status status,
-                                     @Param("twoDaysAgo") LocalDate twoDaysAgo);
+                                     @Param("role") User.Role role,
+                                     @Param("today") LocalDate today);
 }

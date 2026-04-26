@@ -17,10 +17,13 @@ import java.time.LocalDate;
  * Scheduled job that runs every midnight to recalculate tenant statuses
  * based on their checkout dates.
  *
- * Rules:
- *   - checkout == today or tomorrow  → TO_BE_EXTENDED
- *   - checkout < (today - 1 day)      → CLOSED  (2+ days in the past)
- *   - checkout > tomorrow             → ACTIVE
+ * Rules (evaluated for each run date, called "today"):
+ *   - checkout IS NULL or checkout > tomorrow → ACTIVE
+ *   - checkout == today or tomorrow           → TO_BE_EXTENDED
+ *   - checkout < today (yesterday or earlier) → CLOSED
+ *
+ * Every possible checkout date (including NULL) maps to exactly one status
+ * on each run.
  */
 @Service
 public class TenantStatusScheduler {
@@ -31,9 +34,7 @@ public class TenantStatusScheduler {
     private TenantRepository tenantRepository;
 
     /**
-     * Runs every day at midnight (00:00:00).
-     * Also exposed as a public method so it can be triggered immediately
-     * when a tenant's checkout date is updated.
+     * Runs every day at midnight (00:00:00) and once on application startup.
      */
     @EventListener(ApplicationReadyEvent.class)
     @Scheduled(cron = "0 0 0 * * *")
@@ -41,19 +42,17 @@ public class TenantStatusScheduler {
     public void recalculateTenantStatuses() {
         LocalDate today    = LocalDate.now();
         LocalDate tomorrow = today.plusDays(1);
-        // "2 days ago" exclusive boundary: checkout < today - 1 means 2+ days in the past
-        LocalDate twoDaysAgo = today.minusDays(1);
 
         log.info("[TenantStatusScheduler] Running status recalculation for date: {}", today);
 
         int active = tenantRepository.updateStatusForActiveTenants(
-                User.Status.ACTIVE, tomorrow);
+                User.Status.ACTIVE, User.Role.TENANT, tomorrow);
 
         int toBeExtended = tenantRepository.updateStatusForToBeExtendedTenants(
-                User.Status.TO_BE_EXTENDED, today, tomorrow);
+                User.Status.TO_BE_EXTENDED, User.Role.TENANT, today, tomorrow);
 
         int closed = tenantRepository.updateStatusForClosedTenants(
-                User.Status.CLOSED, twoDaysAgo);
+                User.Status.CLOSED, User.Role.TENANT, today);
 
         log.info("[TenantStatusScheduler] Status update complete — ACTIVE: {}, TO_BE_EXTENDED: {}, CLOSED: {}",
                 active, toBeExtended, closed);

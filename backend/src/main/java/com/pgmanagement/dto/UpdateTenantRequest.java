@@ -50,8 +50,10 @@ public class UpdateTenantRequest {
     @Pattern(regexp = "MARRIED|UNMARRIED", message = "Marital status must be MARRIED or UNMARRIED")
     private String maritalStatus;
 
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Check-in date must be in ISO-8601 format (YYYY-MM-DD)")
     private String checkInDate;
 
+    @Pattern(regexp = "^\\d{4}-\\d{2}-\\d{2}$", message = "Check-out date must be in ISO-8601 format (YYYY-MM-DD)")
     private String checkOutDate;
 
     @Pattern(regexp = "DAY|MONTH", message = "Stay schedule must be DAY or MONTH")

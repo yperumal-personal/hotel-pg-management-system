@@ -28,6 +28,7 @@ interface Props {
   onDecrement: () => void;
   pricingRates: { DAY: number | null; MONTH: number | null };
   showCheckInDate?: boolean;
+  disableScheduleChange?: boolean;
 }
 
 function computeCheckOutDate(checkInDate: string, staySchedule: string, stayDuration: number): string {
@@ -49,6 +50,7 @@ export default function StayScheduleFields({
   onDecrement,
   pricingRates,
   showCheckInDate = true,
+  disableScheduleChange = false,
 }: Props) {
   const rate = values.staySchedule ? pricingRates[values.staySchedule as 'DAY' | 'MONTH'] : null;
   const checkOutDate = computeCheckOutDate(values.checkInDate, values.staySchedule, values.stayDuration);
@@ -76,8 +78,8 @@ export default function StayScheduleFields({
             Stay Schedule *
           </FormLabel>
           <RadioGroup row value={values.staySchedule} onChange={onStayScheduleChange}>
-            <FormControlLabel value="DAY" control={<Radio />} label="Day Plan" />
-            <FormControlLabel value="MONTH" control={<Radio />} label="Monthly Plan" />
+            <FormControlLabel value="DAY" control={<Radio disabled={disableScheduleChange} />} label="Day Plan" />
+            <FormControlLabel value="MONTH" control={<Radio disabled={disableScheduleChange} />} label="Monthly Plan" />
           </RadioGroup>
         </FormControl>
       </Grid>

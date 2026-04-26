@@ -105,6 +105,9 @@ public class TenantService {
         }
         if (request.getStatus() != null && !request.getStatus().isEmpty()) {
             tenant.setStatus(User.Status.valueOf(request.getStatus()));
+        } else if (request.getCheckOutDate() != null && !request.getCheckOutDate().isEmpty()) {
+            // Recompute status automatically when checkout date is updated
+            tenant.setStatus(computeStatus(tenant.getCheckOutDate()));
         }
 
         return tenantRepository.save(tenant);
@@ -117,5 +120,26 @@ public class TenantService {
     public void deleteTenant(Long id) {
         User tenant = getTenantById(id);
         tenantRepository.delete(tenant);
+    }
+
+    /**
+     * Compute tenant status from checkout date using the same rules as the nightly scheduler.
+     *
+     * - checkout IS NULL or checkout > tomorrow → ACTIVE
+     * - checkout == today or tomorrow           → TO_BE_EXTENDED
+     * - checkout < today (yesterday or earlier) → CLOSED
+     */
+    private User.Status computeStatus(LocalDate checkOutDate) {
+        if (checkOutDate == null) {
+            return User.Status.ACTIVE;
+        }
+        LocalDate today    = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        if (checkOutDate.isBefore(today)) {
+            return User.Status.CLOSED;
+        } else if (!checkOutDate.isAfter(tomorrow)) {
+            return User.Status.TO_BE_EXTENDED;
+        }
+        return User.Status.ACTIVE;
     }
 }

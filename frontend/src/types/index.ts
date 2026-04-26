@@ -17,7 +17,7 @@ export interface User {
   gender?: 'MALE' | 'FEMALE' | 'OTHER';
   maritalStatus?: 'MARRIED' | 'UNMARRIED';
   role: 'OWNER' | 'TENANT' | 'STAFF' | 'ADMIN';
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: 'ACTIVE' | 'TO_BE_EXTENDED' | 'CLOSED';
 }
 
 export interface Property {
@@ -99,7 +99,7 @@ export interface Tenant {
 }
 
 export interface UpdateTenantStatusRequest {
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: 'ACTIVE' | 'TO_BE_EXTENDED' | 'CLOSED';
 }
 
 export interface AuthResponse {

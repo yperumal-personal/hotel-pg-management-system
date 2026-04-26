@@ -22,14 +22,14 @@ export interface UpdateTenantData {
   checkOutDate?: string;
   staySchedule?: 'DAY' | 'MONTH';
   stayDuration?: number;
-  status?: string;
+  status?: Tenant['status'];
 }
 
 export interface ExtendStayData {
   checkOutDate: string;
   staySchedule: 'DAY' | 'MONTH';
   stayDuration: number;
-  status: string;
+  status: Tenant['status'];
 }
 
 export const tenantService = {

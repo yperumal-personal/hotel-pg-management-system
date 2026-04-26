@@ -16,13 +16,13 @@ WHERE role = 'TENANT'
   AND check_out_date >= CURRENT_DATE
   AND check_out_date <= CURRENT_DATE + INTERVAL '1 day';
 
--- Tenants whose checkout date is 2 or more days in the past → CLOSED
+-- Tenants whose checkout date is before today (yesterday or earlier) → CLOSED
 UPDATE users
 SET status = 'CLOSED'
 WHERE role = 'TENANT'
-  AND check_out_date < CURRENT_DATE - INTERVAL '1 day';
+  AND check_out_date < CURRENT_DATE;
 
--- All remaining tenants (checkout in the future beyond tomorrow) → ACTIVE
+-- All remaining tenants (checkout in the future beyond tomorrow, or no checkout date) → ACTIVE
 UPDATE users
 SET status = 'ACTIVE'
 WHERE role = 'TENANT'
@@ -32,6 +32,11 @@ WHERE role = 'TENANT'
 UPDATE users
 SET status = 'ACTIVE'
 WHERE role != 'TENANT';
+
+-- Catch-all: any row that still has an old/unmapped status value → ACTIVE
+UPDATE users
+SET status = 'ACTIVE'
+WHERE status NOT IN ('ACTIVE', 'TO_BE_EXTENDED', 'CLOSED');
 
 -- Step 3: Add the new CHECK constraint
 ALTER TABLE users
