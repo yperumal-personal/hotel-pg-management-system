@@ -9,6 +9,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import org.springframework.boot.context.event.ApplicationReadyEvent;
+import org.springframework.context.event.EventListener;
 import java.time.LocalDate;
 
 /**
@@ -33,6 +35,7 @@ public class TenantStatusScheduler {
      * Also exposed as a public method so it can be triggered immediately
      * when a tenant's checkout date is updated.
      */
+    @EventListener(ApplicationReadyEvent.class)
     @Scheduled(cron = "0 0 0 * * *")
     @Transactional
     public void recalculateTenantStatuses() {

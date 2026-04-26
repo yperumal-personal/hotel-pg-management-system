@@ -30,6 +30,7 @@ export default function ExtendStay() {
     staySchedule: 'DAY' as 'DAY' | 'MONTH',
     stayDuration: 1,
   });
+  
   const [pricingRates, setPricingRates] = useState<{ DAY: number | null; MONTH: number | null }>({
     DAY: null,
     MONTH: null,
@@ -83,16 +84,16 @@ export default function ExtendStay() {
     }
   };
 
-  const calculateNewCheckOutDate = (): string => {
+  const newCheckOutDate = (() => {
     if (!tenant?.checkOutDate) return '';
-    const currentCheckOut = new Date(tenant.checkOutDate);
+    const date = new Date(tenant.checkOutDate);
     if (values.staySchedule === 'DAY') {
-      currentCheckOut.setDate(currentCheckOut.getDate() + values.stayDuration);
+      date.setDate(date.getDate() + values.stayDuration);
     } else {
-      currentCheckOut.setMonth(currentCheckOut.getMonth() + values.stayDuration);
+      date.setMonth(date.getMonth() + values.stayDuration);
     }
-    return currentCheckOut.toISOString().split('T')[0];
-  };
+    return date.toISOString().split('T')[0];
+  })();
 
   const handleSubmit = async () => {
     if (!tenant) return;
@@ -101,7 +102,6 @@ export default function ExtendStay() {
     setError(null);
 
     try {
-      const newCheckOutDate = calculateNewCheckOutDate();
       const newStayDuration = (tenant.stayDuration || 0) + values.stayDuration;
 
       await tenantService.extendStay(Number(id), {
@@ -142,8 +142,6 @@ export default function ExtendStay() {
   }
 
   const rate = pricingRates[values.staySchedule];
-  const totalCost = rate ? rate * values.stayDuration : 0;
-  const newCheckOutDate = calculateNewCheckOutDate();
 
   return (
     <Box>
