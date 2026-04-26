@@ -68,15 +68,12 @@ export default function ViewTenant() {
     });
   };
 
-  const getStayStatus = (checkOutDate?: string) => {
-    if (!checkOutDate) return { label: 'N/A', color: 'default' as const };
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const checkout = new Date(checkOutDate);
-    if (checkout >= today) {
-      return { label: 'ACTIVE', color: 'success' as const };
+  const getStatusChip = (status: Tenant['status']) => {
+    switch (status) {
+      case 'TO_BE_EXTENDED': return { label: 'To Be Extended', color: 'warning' as const };
+      case 'CLOSED':         return { label: 'Closed',          color: 'default' as const };
+      default:               return { label: 'Active',          color: 'success' as const };
     }
-    return { label: 'To be Extended', color: 'error' as const };
   };
 
   if (loading) {
@@ -98,7 +95,7 @@ export default function ViewTenant() {
     );
   }
 
-  const stayStatus = getStayStatus(tenant.checkOutDate);
+  const stayStatus = getStatusChip(tenant.status);
 
   return (
     <Box>
@@ -237,8 +234,18 @@ export default function ViewTenant() {
         </Grid>
       </SectionCard>
 
-      {/* Edit Button */}
-      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2 }}>
+      {/* Action Buttons */}
+      <Box sx={{ display: 'flex', justifyContent: 'flex-end', mt: 2, gap: 1.5 }}>
+        {tenant.status === 'TO_BE_EXTENDED' && (
+          <Button
+            variant="contained"
+            color="warning"
+            onClick={() => navigate(`/tenants/extend/${tenant.id}`)}
+            size="large"
+          >
+            Extend Stay
+          </Button>
+        )}
         <Button
           variant="contained"
           startIcon={<EditIcon />}

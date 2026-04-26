@@ -85,7 +85,7 @@ public class AuthService {
         user.setStayDuration(request.getStayDuration());
         
         user.setRole(User.Role.valueOf(request.getRole()));
-        user.setStatus(User.Status.ACTIVE);
+        user.setStatus(computeInitialStatus(user.getCheckOutDate(), user.getRole()));
         
         User savedUser = userRepository.save(user);
         
@@ -114,8 +114,8 @@ public class AuthService {
             User user = userRepository.findByEmail(request.getEmail())
                     .orElseThrow(() -> new UsernameNotFoundException("User not found"));
             
-            // Check if user is active
-            if (user.getStatus() != User.Status.ACTIVE) {
+            // Check if account is active (only enforced for non-tenant roles)
+            if (user.getRole() != User.Role.TENANT && user.getStatus() != User.Status.ACTIVE) {
                 throw new UnauthorizedException("Account is not active");
             }
             
@@ -138,5 +138,27 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         
         return new UserResponse(user);
+    }
+
+    /**
+     * Compute the initial status for a tenant based on their checkout date.
+     * Only applies to TENANTs; other roles default to ACTIVE.
+     *
+     * - checkout IS NULL or checkout > tomorrow → ACTIVE
+     * - checkout == today or tomorrow           → TO_BE_EXTENDED
+     * - checkout < today (yesterday or earlier) → CLOSED
+     */
+    private User.Status computeInitialStatus(LocalDate checkOutDate, User.Role role) {
+        if (role != User.Role.TENANT || checkOutDate == null) {
+            return User.Status.ACTIVE;
+        }
+        LocalDate today    = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        if (checkOutDate.isBefore(today)) {
+            return User.Status.CLOSED;
+        } else if (!checkOutDate.isAfter(tomorrow)) {
+            return User.Status.TO_BE_EXTENDED;
+        }
+        return User.Status.ACTIVE;
     }
 }

@@ -39,7 +39,6 @@ export default function UpdateTenant() {
     pinCode: '',
     gender: '',
     maritalStatus: '',
-    status: 'ACTIVE',
   });
   const [loading, setLoading] = useState(true);
   const [submitting, setSubmitting] = useState(false);
@@ -75,7 +74,6 @@ export default function UpdateTenant() {
         pinCode: tenant.pinCode || '',
         gender: tenant.gender || '',
         maritalStatus: tenant.maritalStatus || '',
-        status: tenant.status || 'ACTIVE',
       });
     } catch (err: any) {
       setError(err.response?.data?.message || 'Failed to load tenant');
@@ -169,7 +167,6 @@ export default function UpdateTenant() {
         pinCode: formData.pinCode || undefined,
         gender: formData.gender || undefined,
         maritalStatus: formData.maritalStatus || undefined,
-        status: formData.status,
       });
       setSuccess('Tenant updated successfully!');
       setTimeout(() => navigate('/tenants'), 1500);
@@ -387,21 +384,6 @@ export default function UpdateTenant() {
                 onChange={handleChange}
                 placeholder="6 digit PIN code"
               />
-            </Grid>
-            <Grid item xs={12}>
-              <TextField
-                fullWidth
-                select
-                label="Status"
-                name="status"
-                value={formData.status}
-                onChange={handleChange}
-                required
-              >
-                <MenuItem value="ACTIVE">Active</MenuItem>
-                <MenuItem value="INACTIVE">Inactive</MenuItem>
-                <MenuItem value="SUSPENDED">Suspended</MenuItem>
-              </TextField>
             </Grid>
           </Grid>
 
