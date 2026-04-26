@@ -110,7 +110,7 @@ public class User {
     }
     
     public enum Status {
-        ACTIVE, INACTIVE, SUSPENDED
+        ACTIVE, TO_BE_EXTENDED, CLOSED
     }
     
     public enum WorkStatus {

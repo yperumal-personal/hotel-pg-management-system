@@ -90,7 +90,7 @@ export interface Tenant {
   pinCode?: string;
   gender?: 'MALE' | 'FEMALE' | 'OTHER';
   maritalStatus?: 'MARRIED' | 'UNMARRIED';
-  status: 'ACTIVE' | 'INACTIVE' | 'SUSPENDED';
+  status: 'ACTIVE' | 'TO_BE_EXTENDED' | 'CLOSED';
   createdAt: string;
   checkInDate?: string;
   checkOutDate?: string;

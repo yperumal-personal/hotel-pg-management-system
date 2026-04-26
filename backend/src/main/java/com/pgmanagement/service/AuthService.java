@@ -85,7 +85,7 @@ public class AuthService {
         user.setStayDuration(request.getStayDuration());
         
         user.setRole(User.Role.valueOf(request.getRole()));
-        user.setStatus(User.Status.ACTIVE);
+        user.setStatus(computeInitialStatus(user.getCheckOutDate(), user.getRole()));
         
         User savedUser = userRepository.save(user);
         
@@ -138,5 +138,27 @@ public class AuthService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found"));
         
         return new UserResponse(user);
+    }
+
+    /**
+     * Compute the initial status for a tenant based on their checkout date.
+     * Only applies to TENANTs; other roles default to ACTIVE.
+     *
+     * - checkout == today or tomorrow  → TO_BE_EXTENDED
+     * - checkout < (today - 1)         → CLOSED  (2+ days in the past)
+     * - otherwise                      → ACTIVE
+     */
+    private User.Status computeInitialStatus(LocalDate checkOutDate, User.Role role) {
+        if (role != User.Role.TENANT || checkOutDate == null) {
+            return User.Status.ACTIVE;
+        }
+        LocalDate today    = LocalDate.now();
+        LocalDate tomorrow = today.plusDays(1);
+        if (checkOutDate.isEqual(today) || checkOutDate.isEqual(tomorrow)) {
+            return User.Status.TO_BE_EXTENDED;
+        } else if (checkOutDate.isBefore(today.minusDays(1))) {
+            return User.Status.CLOSED;
+        }
+        return User.Status.ACTIVE;
     }
 }
